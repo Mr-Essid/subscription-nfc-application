@@ -10,7 +10,7 @@ import okhttp3.MultipartBody
 import java.util.concurrent.Flow
 import javax.inject.Inject
 
-class RegisterUseCase @Inject constructor (
+class RegisterUseCase @Inject constructor(
     private val userManagementRepositoryImp: UserManagement
 ) {
     class ArgumentsNotCompleteError(
@@ -32,14 +32,26 @@ class RegisterUseCase @Inject constructor (
 
 
         return userManagementRepositoryImp.register(
-            firstname = dataFlowRapper.firstname!!,
-            lastname = lastname!!,
-            email = dataFlowRapper.email!!,
-            password = dataFlowRapper.password!!,
-            appId = dataFlowRapper.appId!!,
-            deviceId = dataFlowRapper.deviceName!!,
-            multipartBody = image,
-            phoneNumber = dataFlowRapper.phoneNumber!!
+            firstname = MultipartBody.Part.createFormData("firstname", dataFlowRapper.firstname!!),
+            lastname = MultipartBody.Part.createFormData("lastname", lastname!!),
+            email = MultipartBody.Part.createFormData("email", dataFlowRapper.email!!),
+            password = MultipartBody.Part.createFormData(
+                "password",
+                dataFlowRapper.password!!
+            ),
+            appId = MultipartBody.Part.createFormData(
+                "appId",
+                dataFlowRapper.appId!!
+            ),
+            deviceId = MultipartBody.Part.createFormData(
+                "deviceName",
+                dataFlowRapper.deviceName!!
+            ),
+            phoneNumber = MultipartBody.Part.createFormData(
+                "phoneNumber",
+                dataFlowRapper.phoneNumber!!
+            ),
+            multipartBody = image
         )
 
 

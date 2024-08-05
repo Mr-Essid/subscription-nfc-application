@@ -1,6 +1,7 @@
 package com.example.subscriptionbusapplication
 
 import androidx.core.app.NotificationCompat.MessagingStyle.Message
+import com.example.subscriptionbusapplication.data.models.ErrorModel422
 
 sealed class AppResponse<T>(
     val data: T? = null,
@@ -17,7 +18,8 @@ sealed class AppResponse<T>(
         message: String? = null,
         data: T? = null,
         code: Int?,
-        isLoading: Boolean = false
+        isLoading: Boolean = false,
+        errorModel422: ErrorModel422? = null
     ) : AppResponse<T>(message = message, data = data, code = code, isLoading = isLoading)
 
 

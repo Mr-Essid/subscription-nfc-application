@@ -1,12 +1,15 @@
 package com.example.subscriptionbusapplication.data.repositoryImp
 
 import com.example.subscriptionbusapplication.AppResponse
+import com.example.subscriptionbusapplication.data.models.ErrorModel422
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
 import com.example.subscriptionbusapplication.data.models.Subscription
 import com.example.subscriptionbusapplication.data.models.User
 import com.example.subscriptionbusapplication.data.remote.ImageResolveAPI
 import com.example.subscriptionbusapplication.data.remote.SubscriptionAPI
 import com.example.subscriptionbusapplication.data.repository.UserManagement
+import com.example.subscriptionbusapplication.fromStatusCodeToMessage
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.MultipartBody
@@ -27,7 +30,7 @@ class UserManagementRepositoryImp @Inject constructor(
             try {
                 val data = imageResolveAPI.resolveImage(requestBody)
                 if (data.code() != 200 && !data.isSuccessful) {
-                    emit(AppResponse.Error(message = data.message(), code = data.code()))
+                    emit(AppResponse.Error(message = fromStatusCodeToMessage(statusCode = data.code()), code = data.code()))
                 } else {
                     emit(AppResponse.Success(data.body()))
                 }
@@ -40,14 +43,14 @@ class UserManagementRepositoryImp @Inject constructor(
             }
         }
 
-    override suspend fun register(
-        firstname: String,
-        lastname: String,
-        email: String,
-        password: String,
-        phoneNumber: String,
-        appId: String,
-        deviceId: String,
+    override fun register(
+        firstname: MultipartBody.Part,
+        lastname: MultipartBody.Part,
+        email: MultipartBody.Part,
+        password: MultipartBody.Part,
+        phoneNumber: MultipartBody.Part,
+        appId: MultipartBody.Part,
+        deviceId: MultipartBody.Part,
         multipartBody: MultipartBody.Part
     ): Flow<AppResponse<User?>> = flow {
         emit(AppResponse.Loading(isLoading = true, data = null))
@@ -62,7 +65,17 @@ class UserManagementRepositoryImp @Inject constructor(
                 deviceId,
                 multipartBody
             )
-            if (data.code() != 200 && !data.isSuccessful) {
+            if (data.code() == 422) {
+                val errorResponseModel422 =
+                    Gson().fromJson(data.errorBody()?.string(), ErrorModel422::class.java)
+                emit(
+                    AppResponse.Error(
+                        message = data.message(),
+                        code = 422,
+                        errorModel422 = errorResponseModel422
+                    )
+                )
+            } else if (data.code() != 200) {
                 emit(AppResponse.Error(message = data.message(), code = data.code()))
             } else {
                 emit(AppResponse.Success())

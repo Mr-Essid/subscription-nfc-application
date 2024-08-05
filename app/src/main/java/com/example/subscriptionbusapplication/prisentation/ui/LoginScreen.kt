@@ -117,7 +117,7 @@ fun LoginScreen(
                         text = "create account",
                         style = title.copy(fontSize = 12.sp),
                         modifier = Modifier.clickable {
-                            navController.navigate(SignUpFirstStep)
+                            navController.navigate(SignUp)
                         })
                 }
 

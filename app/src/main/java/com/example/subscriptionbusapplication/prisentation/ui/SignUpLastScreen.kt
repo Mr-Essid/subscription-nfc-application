@@ -1,8 +1,6 @@
 package com.example.subscriptionbusapplication.prisentation.ui
 
-import android.graphics.BitmapFactory
 import android.net.Uri
-import android.view.View
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,12 +22,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,8 +32,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,7 +41,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.subscriptionbusapplication.R
-import com.example.subscriptionbusapplication.data.ImageResolverRetrofitInstance
 import com.example.subscriptionbusapplication.prisentation.static_component.PrimaryButton
 import com.example.subscriptionbusapplication.prisentation.static_component.SecondaryButton
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appOnSuccessColor
@@ -57,11 +49,8 @@ import com.example.subscriptionbusapplication.prisentation.ui.theme.bodyText
 import com.example.subscriptionbusapplication.prisentation.ui.theme.errorColor
 import com.example.subscriptionbusapplication.prisentation.ui.theme.h3
 import com.example.subscriptionbusapplication.prisentation.ui.theme.onErrorColor
-import com.example.subscriptionbusapplication.prisentation.ui.theme.onSecondary
-import com.example.subscriptionbusapplication.prisentation.ui.theme.secondary
 import com.example.subscriptionbusapplication.prisentation.ui.theme.title
 import com.example.subscriptionbusapplication.prisentation.viewmodel.SignUpLastStepViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -69,9 +58,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 @Composable
 fun SignUpLastScreen(
-    modifier: Modifier = Modifier,
     dataFlowRapper: DataFlowRapper? = null,
-    lastStepViewModel: SignUpLastStepViewModel
+    lastStepViewModel: SignUpLastStepViewModel = hiltViewModel()
 ) {
 
     val context = LocalContext.current
@@ -111,8 +99,6 @@ fun SignUpLastScreen(
                         .toRequestBody(contentType = "image/png".toMediaType())
                 )
             )
-
-
         }
     }
 
@@ -224,6 +210,16 @@ fun SignUpLastScreen(
                                 text = "send", modifier = Modifier.fillMaxWidth(),
                                 enabled = buttonSubmitEnabled
                             ) {
+                                dataFlowRapper!!.addLastStep(uri!!)
+                                lastStepViewModel.register(
+                                    dataFlowRapper = dataFlowRapper,
+                                    multipartBody = MultipartBody.Part.createFormData(
+                                        "image",
+                                        "image.png",
+                                        context.contentResolver.openInputStream(uri!!)!!.readBytes()
+                                            .toRequestBody(contentType = "image/png".toMediaType())
+                                    )
+                                )
                             }
                             SecondaryButton(text = "cancel", modifier = Modifier.fillMaxWidth()) {
                             }

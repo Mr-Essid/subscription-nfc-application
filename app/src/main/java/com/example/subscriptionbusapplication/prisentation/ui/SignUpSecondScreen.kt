@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -31,7 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.room.util.convertByteToUUID
 import com.example.subscriptionbusapplication.R
 import com.example.subscriptionbusapplication.prisentation.static_component.AppOutlinedEditText
 import com.example.subscriptionbusapplication.prisentation.static_component.AppOutlinedPassword
@@ -48,7 +51,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpSecondScreen(
-    viewModel: SignUpSecondStepViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: SignUpSecondStepViewModel = hiltViewModel(),
     navController: NavController,
     dataFlowRapper: DataFlowRapper? = null
 ) {
@@ -56,13 +59,30 @@ fun SignUpSecondScreen(
     val snackBarHostState = remember {
         SnackbarHostState()
     }
+    val registerState = viewModel.registerResourcesState
+
     val currentFocus = LocalFocusManager.current
     val coroutineScope = rememberCoroutineScope()
+
+
+
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackBarHostState)
+        },
+        topBar = {
+            if (registerState.value.isLoading)
+                LinearProgressIndicator()
         }
+
     ) { padding ->
+
+        registerState.value.errorMessage?.let { message ->
+            coroutineScope.launch {
+                snackBarHostState.showSnackbar(message)
+            }
+        }
+
         Box(
             Modifier
                 .background(appSurfaceColor)
@@ -125,10 +145,22 @@ fun SignUpSecondScreen(
                 PrimaryButton(text = "sign up", modifier = Modifier.fillMaxWidth()) {
                     currentFocus.clearFocus()
                     if (viewModel.validateData()) {
-                        dataFlowRapper?.let {
-                            it.addSecondStep(viewModel.email, viewModel.password)
+                        dataFlowRapper?.addSecondStep(viewModel.email, viewModel.password)
+                        if (dataFlowRapper!!.isDataCollected()) {
 
+                        } else {
+                            navController.navigate(
+                                SignUpLastStep(
+                                    firstname = dataFlowRapper.firstname!!,
+                                    lastname = dataFlowRapper.lastname!!,
+                                    phoneNumber = dataFlowRapper.phoneNumber!!,
+                                    middleName = dataFlowRapper.middleName,
+                                    email = dataFlowRapper.email!!,
+                                    password = dataFlowRapper.password!!
+                                )
+                            )
                         }
+
                     }
 
 

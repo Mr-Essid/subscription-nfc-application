@@ -50,7 +50,6 @@ class FirstStepSignUpViewModel @Inject constructor(
     }
 
     fun validateData(): Boolean {
-
         val regex = Regex("[A-Za-z]{2,254}")
         val regexPhoneNumber =
             Regex("""(((\+\d{1,4})|(\(\d{1,4}\)))[ -])?\d{2,3}[ -]?\d{3}[ -]?\d{3,4}""")
@@ -64,14 +63,11 @@ class FirstStepSignUpViewModel @Inject constructor(
         if (!regexPhoneNumber.matches(phoneNumber)) errorMap["phoneNumber"] =
             "phone number not correct"
 
-
         if (errorMap.isNotEmpty()) {
             _mapError.postValue(errorMap)
             return false
         }
-
         return true
-
 
     }
 
@@ -87,10 +83,18 @@ class FirstStepSignUpViewModel @Inject constructor(
             dataFlowRapper,
             multipartBody
         ).onEach { appResponse ->
-            when(appResponse) {
-                is AppResponse.Loading -> _registerState.value = RegisterResourcesState(isLoading = true)
-                is AppResponse.Success -> _registerState.value = RegisterResourcesState(data = appResponse.data)
-                is AppResponse.Error -> _registerState.value = RegisterResourcesState(errorMessage = appResponse.message)
+            when (appResponse) {
+                is AppResponse.Loading -> _registerState.value =
+                    RegisterResourcesState(isLoading = true)
+
+                is AppResponse.Success -> _registerState.value =
+                    RegisterResourcesState(data = appResponse.data)
+
+                is AppResponse.Error -> {
+                    if (appResponse.code == 422) {
+
+                    }
+                }
             }
 
         }.launchIn(viewModelScope)

@@ -13,14 +13,14 @@ import retrofit2.http.Part
 interface UserManagement {
     fun imageResolve(requestBody: MultipartBody.Part): Flow<AppResponse<ImageResolverModel?>>
 
-     fun register(
-        firstname: String,
-        lastname: String,
-        email: String,
-        password: String,
-        phoneNumber: String,
-        appId: String,
-        deviceId: String,
+    fun register(
+        firstname: MultipartBody.Part,
+        lastname: MultipartBody.Part,
+        email: MultipartBody.Part,
+        password: MultipartBody.Part,
+        phoneNumber: MultipartBody.Part,
+        appId: MultipartBody.Part,
+        deviceId: MultipartBody.Part,
         multipartBody: MultipartBody.Part
     ): Flow<AppResponse<User?>>
 

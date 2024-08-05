@@ -15,10 +15,11 @@ object ImageResolverRetrofitInstance {
     fun getInstance(): ImageResolveAPI {
 
         val interceptor = HttpLoggingInterceptor()
-        interceptor.setLevel(HttpLoggingInterceptor.Level.NONE)
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
 
         return Retrofit.Builder().baseUrl(BASE_URL).client(
             OkHttpClient().newBuilder().addInterceptor(interceptor)
+
                 .build()
         )
             .addConverterFactory(GsonConverterFactory.create())
@@ -27,12 +28,12 @@ object ImageResolverRetrofitInstance {
 }
 
 object SubscriptionServiceRetrofitInstance {
-    private const val BASE_URL = "https://192.168.1.24:8001"
+    private const val BASE_URL = "http://192.168.95.97:8090"
 
     fun getInstance(): SubscriptionAPI {
 
         val interceptor = HttpLoggingInterceptor()
-        interceptor.setLevel(HttpLoggingInterceptor.Level.NONE)
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
 
 
         return Retrofit.Builder().baseUrl(BASE_URL).client(

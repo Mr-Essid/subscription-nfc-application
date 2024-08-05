@@ -60,24 +60,10 @@ class HomeActivity : ComponentActivity() {
                     composable<Login> {
                         LoginScreen(navController = navController)
                     }
-                    composable<SignUpFirstStep> {
-                        SignUpFirstStepScreen(
-                            navController = navController,
-                            dataFlowRapper = collectedData
-                        )
+                    composable<SignUp> {
+                        SignUpScreen(navController = navController)
                     }
-                    composable<SignUpSecondStep> {
-                        SignUpSecondScreen(
-                            dataFlowRapper = collectedData,
-                            navController = navController
-                        )
-                    }
-                    composable<SignUpLastStep> {
-                        SignUpLastScreen(
-                            dataFlowRapper = collectedData,
-                            lastStepViewModel = hiltViewModel()
-                        )
-                    }
+
 
                 }
 
@@ -111,6 +97,10 @@ data class SignUpLastStep(
     val password: String,
     val middleName: String?
 )
+
+
+@Serializable
+object SignUp
 
 
 data class DataFlowRapper(

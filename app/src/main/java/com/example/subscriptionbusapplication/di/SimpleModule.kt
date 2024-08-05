@@ -4,6 +4,8 @@ import com.example.subscriptionbusapplication.data.ImageResolverRetrofitInstance
 import com.example.subscriptionbusapplication.data.SubscriptionServiceRetrofitInstance
 import com.example.subscriptionbusapplication.data.remote.ImageResolveAPI
 import com.example.subscriptionbusapplication.data.remote.SubscriptionAPI
+import com.example.subscriptionbusapplication.data.repository.UserManagement
+import com.example.subscriptionbusapplication.data.repositoryImp.UserManagementRepositoryImp
 import com.example.subscriptionbusapplication.domain.shared_usecase.RegisterUseCase
 import dagger.Module
 import dagger.Provides
@@ -25,7 +27,16 @@ object SimpleModule {
         return ImageResolverRetrofitInstance.getInstance()
     }
 
+    @Provides
+    fun provideUserManagement(
+        subscriptionAPI: SubscriptionAPI,
+        imageResolveAPI: ImageResolveAPI
+    ): UserManagement {
+        return UserManagementRepositoryImp(
+            subscriptionAPI = subscriptionAPI,
+            imageResolveAPI = imageResolveAPI
+        )
+    }
 
 
-    
 }
