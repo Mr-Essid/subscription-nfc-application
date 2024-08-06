@@ -167,6 +167,7 @@ class SignUpViewModel @Inject constructor(
 
             when (appResponse) {
                 is AppResponse.Success -> {
+                    println("this is it the data is came ${appResponse.data}")
                     _registerState.value = RegisterResourcesState(data = appResponse.data)
                 }
 
@@ -251,6 +252,11 @@ class SignUpViewModel @Inject constructor(
 
     fun clearImageResolveState() {
         _imageResolveState.value = ImageResolveState()
+    }
+
+
+    fun clearRegistrationError() {
+        _registerState.value = RegisterResourcesState()
     }
 
 }

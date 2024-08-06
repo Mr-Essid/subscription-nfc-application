@@ -6,6 +6,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 
 object ImageResolverRetrofitInstance {
@@ -36,7 +37,8 @@ object SubscriptionServiceRetrofitInstance {
 
 
         return Retrofit.Builder().baseUrl(BASE_URL).client(
-            OkHttpClient().newBuilder().addInterceptor(interceptor).build()
+            OkHttpClient().newBuilder().addInterceptor(interceptor)
+                .readTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS).build()
         )
             .addConverterFactory(GsonConverterFactory.create())
             .build().create(SubscriptionAPI::class.java)

@@ -5,8 +5,11 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,6 +26,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -50,6 +54,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,6 +65,7 @@ import coil.compose.AsyncImage
 import com.example.subscriptionbusapplication.R
 import com.example.subscriptionbusapplication.prisentation.static_component.AppOutlinedEditText
 import com.example.subscriptionbusapplication.prisentation.static_component.AppOutlinedPassword
+import com.example.subscriptionbusapplication.prisentation.static_component.ErrorTicketView
 import com.example.subscriptionbusapplication.prisentation.static_component.PrimaryButton
 import com.example.subscriptionbusapplication.prisentation.static_component.SecondaryButton
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appPrimaryColor
@@ -177,461 +183,507 @@ fun SignUpScreen(
                 slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.End
                 ) togetherWith slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start
+                    AnimatedContentTransitionScope.SlideDirection.End
                 )
         }
 
+    var showTicketAlert by remember {
+        mutableStateOf(false)
+    }
+    if (registerResourcesState.value.errorMessage != null) {
+        showTicketAlert = true
+    }
+
+
+    registerResourcesState.value.data?.let {
+        // in this block we are sure the signup process is done
+        println("we are here")
+        navController.navigate(EmailConfirmation)
+        signUpViewModel.clearRegistrationError()
+    }
+
+
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
-        topBar = {
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
+    ) { padding ->
+
+        Box(
+
+            modifier
+                .background(appSurfaceColor)
+                .padding(padding)
+                .fillMaxSize()
+
+        ) {
+
+
+            Box(
+            ) {
+
+
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .background(appSurfaceColor)
+
+                ) {
+                    Spacer(modifier = Modifier.height(28.dp))
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Spacer(modifier = Modifier.height(32.dp))
+                            Row(
+                                Modifier.padding(horizontal = 48.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    tint = appPrimaryColor,
+                                    painter = painterResource(id = R.drawable.baseline_check_circle_outline_24),
+                                    contentDescription = "first step",
+                                    modifier = Modifier.clickable {
+                                        coroutineScope.launch {
+                                            step3color = Color.Black
+                                            beta.animateTo(0f)
+                                            step2color = Color.Black
+                                            alpha.animateTo(0f)
+                                            signUpViewModel.currentPage = 1
+                                        }
+                                    }
+                                )
+
+                                HorizontalDivider(
+                                    modifier = Modifier
+                                        .height(2.dp)
+                                        .weight(1f)
+                                        .background(
+                                            brush = Brush.horizontalGradient(
+                                                colorStops = arrayOf(
+                                                    alpha.value to appPrimaryColor,
+                                                    alpha.value to Color.Transparent
+                                                )
+
+                                            )
+                                        )
+                                )
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_check_circle_outline_24),
+                                    contentDescription = "second step",
+                                    tint = step2color,
+                                    modifier = Modifier.clickable {
+                                        coroutineScope.launch {
+                                            if (signUpViewModel.validateFirstStep()) {
+                                                step3color = Color.Black
+                                                beta.animateTo(0f)
+                                                signUpViewModel.currentPage = 2
+                                                alpha.animateTo(1f)
+                                                step2color = appPrimaryColor
+                                            }
+
+                                        }
+                                    }
+                                )
+                                HorizontalDivider(
+                                    modifier =
+                                    Modifier
+                                        .height(2.dp)
+                                        .weight(1f)
+                                        .background(
+                                            brush = Brush.horizontalGradient(
+                                                colorStops =
+                                                arrayOf(
+                                                    beta.value to appPrimaryColor,
+                                                    beta.value to Color.Transparent
+                                                )
+                                            )
+                                        )
+                                )
+                                Icon(
+                                    tint = step3color,
+                                    painter = painterResource(id = R.drawable.baseline_check_circle_outline_24),
+                                    contentDescription = "last step",
+                                    modifier = Modifier.clickable {
+                                        coroutineScope.launch {
+                                            if (signUpViewModel.validateFirstStep() && signUpViewModel.validateSecondStep()) {
+                                                beta.animateTo(1f)
+                                                signUpViewModel.currentPage = 3
+                                                step3color = appPrimaryColor
+                                            }
+
+                                        }
+                                    }
+                                )
+
+                            }
+
+                            Spacer(modifier = Modifier.height(18.dp))
+                            Text(text = "Sign up", style = h2, textAlign = TextAlign.Center)
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Image(
+                                painter = painterResource(id = R.drawable.godigitalhr),
+                                contentDescription = "go digital logo",
+                                modifier = Modifier.width(100.dp),
+                                alignment = Alignment.Center
+                            )
+                        }
+                    }
+
+
+                    // where all content is applied
+                    AnimatedContent(
+                        modifier = Modifier
+                            .weight(1f),
+                        targetState = signUpViewModel.currentPage,
+                        label = "swap content",
+                        transitionSpec = animatedContentTransitionScope
+                    ) { targetSpace ->
+                        // first step
+
+
+                        if (targetSpace == 1)
+                            Box(
+                                Modifier
+                                    .padding(horizontal = 8.dp)
+                                    .fillMaxSize(),
+                            ) {
+
+                                Column {
+
+                                    Spacer(modifier = Modifier.height(32.dp))
+                                    Text(text = "personal information", style = h3)
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    AppOutlinedEditText(
+                                        value = signUpViewModel.firstname,
+                                        onChange = {
+                                            signUpViewModel.firstname = it
+                                        },
+                                        placeholder = "firstname",
+                                        errorMessage = errorMap[FormNamesFirstStep.FIRSTNAME.name],
+
+                                        )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    AppOutlinedEditText(
+                                        value = signUpViewModel.middleName,
+                                        onChange = {
+                                            signUpViewModel.middleName = it
+                                        },
+                                        placeholder = "middle name (optional)",
+                                        errorMessage = errorMap[FormNamesFirstStep.MIDDLE_NAME.name],
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    AppOutlinedEditText(
+                                        value = signUpViewModel.lastName,
+                                        onChange = {
+                                            signUpViewModel.lastName = it
+                                        },
+                                        placeholder = "lastname",
+                                        errorMessage = errorMap[FormNamesFirstStep.LASTNAME.name],
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    AppOutlinedEditText(
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                                        value = signUpViewModel.phoneNumber,
+                                        onChange = {
+                                            signUpViewModel.phoneNumber = it
+                                        },
+
+                                        placeholder = "phone number",
+                                        errorMessage = errorMap[FormNamesFirstStep.PHONE_NUMBER.name],
+                                    )
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+
+                                    PrimaryButton(
+                                        text = "next",
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        if (signUpViewModel.validateFirstStep()) {
+                                            coroutineScope.launch {
+                                                alpha.animateTo(1f)
+                                                step2color = appPrimaryColor
+                                                signUpViewModel.currentPage = 2
+                                            }
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(0.dp))
+                                    SecondaryButton(
+                                        text = "cancel",
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        signUpViewModel.firstname = ""
+                                        signUpViewModel.middleName = ""
+                                        signUpViewModel.phoneNumber = ""
+                                        signUpViewModel.lastName = ""
+                                    }
+                                }
+                            }
+
+                        if (targetSpace == 2) {
+
+                            Box(
+                                Modifier
+                                    .padding(horizontal = 8.dp)
+                                    .fillMaxSize(),
+                            ) {
+
+                                Column {
+
+                                    Spacer(modifier = Modifier.height(32.dp))
+                                    Text(text = "account information", style = h3)
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    AppOutlinedEditText(
+                                        value = signUpViewModel.email,
+                                        onChange = {
+                                            signUpViewModel.email = it
+                                        },
+                                        placeholder = "email",
+                                        errorMessage = errorMap[FormNamesSecondStep.EMAIL.name]
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    AppOutlinedPassword(
+                                        value = signUpViewModel.password,
+                                        onChange = {
+                                            signUpViewModel.password = it
+                                        },
+                                        placeholder = "password",
+                                        errorMessage = errorMap[FormNamesSecondStep.PASSWORD.name]
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    AppOutlinedPassword(
+                                        value = signUpViewModel.confirmedPassword,
+                                        onChange = {
+                                            signUpViewModel.confirmedPassword = it
+                                        },
+                                        placeholder = "confirm password",
+                                        errorMessage = errorMap[FormNamesSecondStep.PASSWORD_CONFIRMATION.name]
+                                    )
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    PrimaryButton(
+                                        text = "sign up",
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        if (signUpViewModel.validateSecondStep()) {
+                                            coroutineScope.launch {
+                                                beta.animateTo(1f)
+                                                step3color = appPrimaryColor
+                                                signUpViewModel.currentPage = 3
+                                            }
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(0.dp))
+                                    SecondaryButton(
+                                        text = "cancel",
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        signUpViewModel.email = ""
+                                        signUpViewModel.password = ""
+                                        signUpViewModel.confirmedPassword = ""
+                                    }
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+
+                                }
+
+                            }
+                        }
+
+
+                        if (targetSpace == 3)
+                            Column()
+                            {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                {
+                                    Column()
+                                    {
+                                        Spacer(modifier = Modifier.height(28.dp))
+                                        Text(text = "pick image with your face", style = h3)
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        if (signUpViewModel.arrayByteOfImage == null) {
+                                            Image(
+                                                painter = painterResource(id = R.drawable.profilepic),
+                                                contentDescription = "image",
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(28.dp))
+                                                    .clickable {
+                                                        imageColorFilter = null
+                                                        registryActivityResult.launch(
+                                                            PickVisualMediaRequest(
+                                                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                                                            )
+                                                        )
+                                                    }
+                                                    .size(250.dp)
+                                            )
+                                        } else {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(
+                                                        250.dp
+                                                    ), contentAlignment = Alignment.Center
+
+                                            ) {
+
+                                                Box(
+                                                    contentAlignment = Alignment.Center,
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .background(Color.Transparent)
+                                                ) {
+
+                                                    AsyncImage(
+                                                        model = signUpViewModel.arrayByteOfImage,
+                                                        contentDescription = "Selected Image",
+                                                        modifier = Modifier
+
+                                                            .width(250.dp)
+                                                            .clip(
+                                                                RoundedCornerShape(28.dp)
+                                                            )
+                                                            .clickable {
+                                                                registryActivityResult.launch(
+                                                                    PickVisualMediaRequest(
+                                                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                                                    )
+                                                                )
+                                                            },
+                                                        contentScale = ContentScale.Crop,
+                                                        colorFilter = imageColorFilter?.let {
+                                                            ColorFilter.tint(
+                                                                it,
+                                                                blendMode = BlendMode.Lighten
+                                                            )
+                                                        }
+                                                    )
+                                                    if (imageResolverState.value.isLoading)
+                                                        CircularProgressIndicator()
+                                                    else if (imageResolverState.value.errorMessage != null) {
+                                                        Icon(
+                                                            painter = painterResource(id = R.drawable.baseline_close_24),
+                                                            contentDescription = "image refused",
+                                                            tint = Color.Red,
+                                                            modifier = Modifier.size(48.dp)
+                                                        )
+
+                                                        imageColorFilter =
+                                                            Color.Red.copy(alpha = 0.6f)
+                                                    } else if (
+                                                        imageResolverState.value.data != null
+                                                    ) {
+                                                        Icon(
+                                                            painter = painterResource(id = R.drawable.baseline_check_circle_outline_24),
+                                                            contentDescription = "image accepted",
+                                                            tint = appPrimaryColor,
+                                                            modifier = Modifier.size(48.dp)
+                                                        )
+                                                        imageColorFilter =
+                                                            Color.Green.copy(alpha = 0.6f)
+                                                    }
+                                                }
+                                            }
+                                        }
+
+
+                                        Spacer(modifier = Modifier.height(28.dp))
+                                        Column(modifier = Modifier.width(250.dp)) {
+                                            PrimaryButton(
+                                                text = "send", modifier = Modifier.fillMaxWidth(),
+                                                enabled = isImageAccepted.value
+                                            ) {
+                                                // starting the process of registration
+                                                assert(signUpViewModel.arrayByteOfImage != null)
+                                                signUpViewModel.arrayByteOfImage?.let {
+
+
+                                                    // first get bytes
+                                                    // send bytes to registration viewModel
+
+
+                                                    // !! is not one of the best practice i know fault
+                                                    signUpViewModel.register(
+                                                        context.contentResolver.openInputStream(it)!!
+                                                            .readBytes(),
+                                                        deviceId = deviceId,
+                                                        appId = appId
+                                                    )
+
+                                                } ?: run {
+                                                    println("unexpected error occur")
+                                                }
+                                            }
+                                            SecondaryButton(
+                                                text = "cancel",
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+
+                    }
+
+                    // footer
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            HorizontalDivider(thickness = 1.dp, color = appPrimaryColor)
+                            Spacer(modifier = Modifier.heightIn(8.dp))
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "already have account",
+                                    style = bodyText.copy(fontSize = 12.sp)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "login account",
+                                    style = title.copy(fontSize = 12.sp),
+                                    modifier = Modifier.clickable {
+                                        navController.navigate(Login)
+                                    })
+                            }
+                            Spacer(modifier = Modifier.height(48.dp))
+
+                        }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = showTicketAlert,
+                    enter = slideInHorizontally(),
+                    exit = slideOutHorizontally()
+                ) {
+
+                    ErrorTicketView(
+                        message = registerResourcesState.value.errorMessage
+                            ?: "unexpected error has been occur"
+                    ) {
+                        showTicketAlert = false
+                    }
+                }
+
+            }
+
             if (
                 registerResourcesState.value.isLoading
             ) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
-        }
-    ) { padding ->
-        Box(
-            modifier
-                .background(appSurfaceColor)
-                .padding(padding)
-                .fillMaxSize()
-        ) {
 
-
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .background(appSurfaceColor)
-            ) {
-                Spacer(modifier = Modifier.height(28.dp))
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Spacer(modifier = Modifier.height(32.dp))
-                        Row(
-                            Modifier.padding(horizontal = 48.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                tint = appPrimaryColor,
-                                painter = painterResource(id = R.drawable.baseline_check_circle_outline_24),
-                                contentDescription = "first step",
-                                modifier = Modifier.clickable {
-                                    coroutineScope.launch {
-                                        step3color = Color.Black
-                                        beta.animateTo(0f)
-                                        step2color = Color.Black
-                                        alpha.animateTo(0f)
-                                        signUpViewModel.currentPage = 1
-                                    }
-                                }
-                            )
-
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .height(2.dp)
-                                    .weight(1f)
-                                    .background(
-                                        brush = Brush.horizontalGradient(
-                                            colorStops = arrayOf(
-                                                alpha.value to appPrimaryColor,
-                                                alpha.value to Color.Transparent
-                                            )
-
-                                        )
-                                    )
-                            )
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_check_circle_outline_24),
-                                contentDescription = "second step",
-                                tint = step2color,
-                                modifier = Modifier.clickable {
-                                    coroutineScope.launch {
-                                        if (signUpViewModel.validateFirstStep()) {
-                                            step3color = Color.Black
-                                            beta.animateTo(0f)
-                                            signUpViewModel.currentPage = 2
-                                            alpha.animateTo(1f)
-                                            step2color = appPrimaryColor
-                                        }
-
-                                    }
-                                }
-                            )
-                            HorizontalDivider(
-                                modifier =
-                                Modifier
-                                    .height(2.dp)
-                                    .weight(1f)
-                                    .background(
-                                        brush = Brush.horizontalGradient(
-                                            colorStops =
-                                            arrayOf(
-                                                beta.value to appPrimaryColor,
-                                                beta.value to Color.Transparent
-                                            )
-                                        )
-                                    )
-                            )
-                            Icon(
-                                tint = step3color,
-                                painter = painterResource(id = R.drawable.baseline_check_circle_outline_24),
-                                contentDescription = "last step",
-                                modifier = Modifier.clickable {
-                                    coroutineScope.launch {
-                                        if (signUpViewModel.validateFirstStep() && signUpViewModel.validateSecondStep()) {
-                                            beta.animateTo(1f)
-                                            signUpViewModel.currentPage = 3
-                                            step3color = appPrimaryColor
-                                        }
-
-                                    }
-                                }
-                            )
-
-                        }
-
-                        Spacer(modifier = Modifier.height(18.dp))
-                        Text(text = "Sign up", style = h2, textAlign = TextAlign.Center)
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Image(
-                            painter = painterResource(id = R.drawable.godigitalhr),
-                            contentDescription = "go digital logo",
-                            modifier = Modifier.width(100.dp),
-                            alignment = Alignment.Center
-                        )
-                    }
-                }
-
-
-                // where all content is applied
-                AnimatedContent(
-                    modifier = Modifier.weight(1f),
-                    targetState = signUpViewModel.currentPage,
-                    label = "swap content",
-                    transitionSpec = animatedContentTransitionScope
-                ) { targetSpace ->
-                    // first step
-
-
-                    if (targetSpace == 1)
-                        Box(
-                            Modifier
-                                .padding(horizontal = 8.dp)
-                                .fillMaxSize(),
-                        ) {
-
-                            Column {
-
-                                Spacer(modifier = Modifier.height(32.dp))
-                                Text(text = "personal information", style = h3)
-                                Spacer(modifier = Modifier.height(8.dp))
-                                AppOutlinedEditText(
-                                    value = signUpViewModel.firstname,
-                                    onChange = {
-                                        signUpViewModel.firstname = it
-                                    },
-                                    placeholder = "firstname",
-                                    errorMessage = errorMap[FormNamesFirstStep.FIRSTNAME.name],
-
-                                    )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                AppOutlinedEditText(
-                                    value = signUpViewModel.middleName,
-                                    onChange = {
-                                        signUpViewModel.middleName = it
-                                    },
-                                    placeholder = "middle name (optional)",
-                                    errorMessage = errorMap[FormNamesFirstStep.MIDDLE_NAME.name],
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                AppOutlinedEditText(
-                                    value = signUpViewModel.lastName,
-                                    onChange = {
-                                        signUpViewModel.lastName = it
-                                    },
-                                    placeholder = "lastname",
-                                    errorMessage = errorMap[FormNamesFirstStep.LASTNAME.name],
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                AppOutlinedEditText(
-                                    value = signUpViewModel.phoneNumber,
-                                    onChange = {
-                                        signUpViewModel.phoneNumber = it
-                                    },
-                                    placeholder = "phone number",
-                                    errorMessage = errorMap[FormNamesFirstStep.PHONE_NUMBER.name],
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-
-                                PrimaryButton(
-                                    text = "next",
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    if (signUpViewModel.validateFirstStep()) {
-                                        coroutineScope.launch {
-                                            alpha.animateTo(1f)
-                                            step2color = appPrimaryColor
-                                            signUpViewModel.currentPage = 2
-                                        }
-                                    }
-                                }
-                                Spacer(modifier = Modifier.height(0.dp))
-                                SecondaryButton(
-                                    text = "cancel",
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                }
-                            }
-                        }
-
-                    if (targetSpace == 2) {
-
-                        Box(
-                            Modifier
-                                .padding(horizontal = 8.dp)
-                                .fillMaxSize(),
-                        ) {
-
-                            Column {
-
-                                Spacer(modifier = Modifier.height(32.dp))
-                                Text(text = "account information", style = h3)
-                                Spacer(modifier = Modifier.height(8.dp))
-                                AppOutlinedEditText(
-                                    value = signUpViewModel.email,
-                                    onChange = {
-                                        signUpViewModel.email = it
-                                    },
-                                    placeholder = "email",
-                                    errorMessage = errorMap[FormNamesSecondStep.EMAIL.name]
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                AppOutlinedPassword(
-                                    value = signUpViewModel.password,
-                                    onChange = {
-                                        signUpViewModel.password = it
-                                    },
-                                    placeholder = "password",
-                                    errorMessage = errorMap[FormNamesSecondStep.PASSWORD.name]
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                AppOutlinedPassword(
-                                    value = signUpViewModel.confirmedPassword,
-                                    onChange = {
-                                        signUpViewModel.confirmedPassword = it
-                                    },
-                                    placeholder = "confirm password",
-                                    errorMessage = errorMap[FormNamesSecondStep.PASSWORD_CONFIRMATION.name]
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-                                PrimaryButton(
-                                    text = "sign up",
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    if (signUpViewModel.validateSecondStep()) {
-                                        coroutineScope.launch {
-                                            beta.animateTo(1f)
-                                            step3color = appPrimaryColor
-                                            signUpViewModel.currentPage = 3
-                                        }
-                                    }
-                                }
-                                Spacer(modifier = Modifier.height(0.dp))
-                                SecondaryButton(
-                                    text = "cancel",
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                }
-                                Spacer(modifier = Modifier.height(12.dp))
-
-
-                            }
-
-                        }
-                    }
-
-
-                    if (targetSpace == 3)
-                        Column()
-                        {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            {
-                                Column()
-                                {
-                                    Spacer(modifier = Modifier.height(28.dp))
-                                    Text(text = "pick image with your face", style = h3)
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    if (signUpViewModel.arrayByteOfImage == null) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.ic_launcher_background),
-                                            contentDescription = "image",
-                                            modifier = Modifier
-                                                .clickable {
-                                                    imageColorFilter = null
-                                                    registryActivityResult.launch(
-                                                        PickVisualMediaRequest(
-                                                            ActivityResultContracts.PickVisualMedia.ImageOnly
-                                                        )
-                                                    )
-                                                }
-                                                .size(250.dp)
-                                        )
-                                    } else {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(
-                                                    250.dp
-                                                ), contentAlignment = Alignment.Center
-
-                                        ) {
-
-                                            Box(
-                                                contentAlignment = Alignment.Center,
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .background(Color.Transparent)
-                                            ) {
-
-                                                AsyncImage(
-                                                    model = signUpViewModel.arrayByteOfImage,
-                                                    contentDescription = "Selected Image",
-                                                    modifier = Modifier
-
-                                                        .width(250.dp)
-                                                        .clip(
-                                                            RoundedCornerShape(28.dp)
-                                                        )
-                                                        .clickable {
-                                                            registryActivityResult.launch(
-                                                                PickVisualMediaRequest(
-                                                                    ActivityResultContracts.PickVisualMedia.ImageOnly
-                                                                )
-                                                            )
-                                                        },
-                                                    contentScale = ContentScale.Crop,
-                                                    colorFilter = imageColorFilter?.let {
-                                                        ColorFilter.tint(
-                                                            it,
-                                                            blendMode = BlendMode.Lighten
-                                                        )
-                                                    }
-                                                )
-                                                if (imageResolverState.value.isLoading)
-                                                    CircularProgressIndicator()
-                                                else if (imageResolverState.value.errorMessage != null) {
-                                                    Icon(
-                                                        painter = painterResource(id = R.drawable.baseline_close_24),
-                                                        contentDescription = "image refused",
-                                                        tint = Color.Red,
-                                                        modifier = Modifier.size(48.dp)
-                                                    )
-
-                                                    imageColorFilter = Color.Red.copy(alpha = 0.6f)
-                                                } else if (
-                                                    imageResolverState.value.data != null
-                                                ) {
-                                                    Icon(
-                                                        painter = painterResource(id = R.drawable.baseline_check_circle_outline_24),
-                                                        contentDescription = "image accepted",
-                                                        tint = appPrimaryColor,
-                                                        modifier = Modifier.size(48.dp)
-                                                    )
-                                                    imageColorFilter =
-                                                        Color.Green.copy(alpha = 0.6f)
-                                                }
-                                            }
-                                        }
-                                    }
-
-
-                                    Spacer(modifier = Modifier.height(28.dp))
-                                    Column(modifier = Modifier.width(250.dp)) {
-                                        PrimaryButton(
-                                            text = "send", modifier = Modifier.fillMaxWidth(),
-                                            enabled = isImageAccepted.value
-                                        ) {
-                                            // starting the process of registration
-                                            assert(signUpViewModel.arrayByteOfImage != null)
-                                            signUpViewModel.arrayByteOfImage?.let {
-
-
-                                                // first get bytes
-                                                // send bytes to registration viewModel
-
-
-                                                // !! is not one of the best practice i know fault
-                                                signUpViewModel.register(
-                                                    context.contentResolver.openInputStream(it)!!
-                                                        .readBytes(),
-                                                    deviceId = deviceId,
-                                                    appId = appId
-                                                )
-
-
-                                            } ?: run {
-                                                println("unexpected error occur")
-                                            }
-
-
-                                        }
-                                        SecondaryButton(
-                                            text = "cancel",
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                        }
-                                    }
-                                }
-
-
-                            }
-
-
-                        }
-                }
-
-
-                // footer
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        HorizontalDivider(thickness = 1.dp, color = appPrimaryColor)
-                        Spacer(modifier = Modifier.heightIn(8.dp))
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "already have account",
-                                style = bodyText.copy(fontSize = 12.sp)
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "login account",
-                                style = title.copy(fontSize = 12.sp),
-                                modifier = Modifier.clickable {
-                                })
-                        }
-
-                        Spacer(modifier = Modifier.height(48.dp))
-                    }
-
-                }
-
-            }
         }
     }
 

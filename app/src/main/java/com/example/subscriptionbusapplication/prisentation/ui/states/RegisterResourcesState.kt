@@ -6,4 +6,4 @@ class RegisterResourcesState(
     val isLoading: Boolean = false,
     val data: User? = null,
     val errorMessage: String? = null
-    )
+)

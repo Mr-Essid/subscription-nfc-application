@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -24,6 +25,7 @@ import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,7 +43,8 @@ fun AppOutlinedEditText(
     modifier: Modifier = Modifier,
     value: String, onChange: (value: String) -> Unit,
     placeholder: String,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    keyboardOptions: KeyboardOptions? = null
 ) {
 
     var focused by remember {
@@ -52,6 +55,7 @@ fun AppOutlinedEditText(
 
 
     OutlinedTextField(
+        keyboardOptions = keyboardOptions ?: KeyboardOptions.Default,
         value = value,
         onValueChange = onChange,
         textStyle = MaterialTheme.typography.bodyLarge.copy(

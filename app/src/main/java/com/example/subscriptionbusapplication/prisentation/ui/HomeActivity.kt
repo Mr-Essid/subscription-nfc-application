@@ -63,6 +63,12 @@ class HomeActivity : ComponentActivity() {
                         )
                     }
 
+                    composable<EmailConfirmation> {
+                        EmailConfirmationScreen(
+                            navController = navController
+                        )
+                    }
+
 
                 }
 
@@ -78,6 +84,11 @@ object Login
 
 @Serializable
 object SignUpFirstStep
+
+
+@Serializable
+object EmailConfirmation
+
 
 @Serializable
 data class SignUpSecondStep(

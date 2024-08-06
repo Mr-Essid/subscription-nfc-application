@@ -3,7 +3,6 @@ package com.example.subscriptionbusapplication.data.repositoryImp
 import com.example.subscriptionbusapplication.AppResponse
 import com.example.subscriptionbusapplication.data.models.ErrorModel422
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
-import com.example.subscriptionbusapplication.data.models.Subscription
 import com.example.subscriptionbusapplication.data.models.User
 import com.example.subscriptionbusapplication.data.remote.ImageResolveAPI
 import com.example.subscriptionbusapplication.data.remote.SubscriptionAPI
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.flow
 import okhttp3.MultipartBody
 import okio.IOException
 import retrofit2.HttpException
-import retrofit2.Response
 import javax.inject.Inject
 
 class UserManagementRepositoryImp @Inject constructor(
@@ -30,7 +28,12 @@ class UserManagementRepositoryImp @Inject constructor(
             try {
                 val data = imageResolveAPI.resolveImage(requestBody)
                 if (data.code() != 200 && !data.isSuccessful) {
-                    emit(AppResponse.Error(message = fromStatusCodeToMessage(statusCode = data.code()), code = data.code()))
+                    emit(
+                        AppResponse.Error(
+                            message = fromStatusCodeToMessage(statusCode = data.code()),
+                            code = data.code()
+                        )
+                    )
                 } else {
                     emit(AppResponse.Success(data.body()))
                 }
@@ -78,7 +81,7 @@ class UserManagementRepositoryImp @Inject constructor(
             } else if (data.code() != 200) {
                 emit(AppResponse.Error(message = data.message(), code = data.code()))
             } else {
-                emit(AppResponse.Success())
+                emit(AppResponse.Success(data.body()!!))
             }
         } catch (e: IOException) {
             // for all kind of network, socket error (timeout, connection error, write to closed socket
