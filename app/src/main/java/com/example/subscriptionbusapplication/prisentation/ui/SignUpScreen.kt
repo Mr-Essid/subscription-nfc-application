@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -77,6 +78,8 @@ import kotlinx.coroutines.launch
 fun SignUpScreen(
     modifier: Modifier = Modifier,
     signUpViewModel: SignUpViewModel = hiltViewModel(),
+    deviceId: String,
+    appId: String,
     navController: NavController
 
 ) {
@@ -180,7 +183,14 @@ fun SignUpScreen(
 
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
+        topBar = {
+            if (
+                registerResourcesState.value.isLoading
+            ) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
+        }
     ) { padding ->
         Box(
             modifier
@@ -552,6 +562,28 @@ fun SignUpScreen(
                                             text = "send", modifier = Modifier.fillMaxWidth(),
                                             enabled = isImageAccepted.value
                                         ) {
+                                            // starting the process of registration
+                                            assert(signUpViewModel.arrayByteOfImage != null)
+                                            signUpViewModel.arrayByteOfImage?.let {
+
+
+                                                // first get bytes
+                                                // send bytes to registration viewModel
+
+
+                                                // !! is not one of the best practice i know fault
+                                                signUpViewModel.register(
+                                                    context.contentResolver.openInputStream(it)!!
+                                                        .readBytes(),
+                                                    deviceId = deviceId,
+                                                    appId = appId
+                                                )
+
+
+                                            } ?: run {
+                                                println("unexpected error occur")
+                                            }
+
 
                                         }
                                         SecondaryButton(

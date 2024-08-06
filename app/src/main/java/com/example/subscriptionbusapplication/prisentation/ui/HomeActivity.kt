@@ -3,10 +3,8 @@ package com.example.subscriptionbusapplication.prisentation.ui
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
-import android.provider.CalendarContract.Instances
 import android.provider.Settings
 import android.provider.Settings.Secure.ANDROID_ID
-import android.telephony.TelephonyManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,12 +16,9 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.example.subscriptionbusapplication.prisentation.ui.theme.SubscriptionBusApplicationTheme
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceColor
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,7 +56,11 @@ class HomeActivity : ComponentActivity() {
                         LoginScreen(navController = navController)
                     }
                     composable<SignUp> {
-                        SignUpScreen(navController = navController)
+                        SignUpScreen(
+                            navController = navController,
+                            deviceId = appId,
+                            appId = deviceId
+                        )
                     }
 
 

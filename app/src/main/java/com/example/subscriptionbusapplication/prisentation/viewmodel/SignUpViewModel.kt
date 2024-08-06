@@ -147,6 +147,71 @@ class SignUpViewModel @Inject constructor(
     }
 
 
+    fun register(byteArray: ByteArray, deviceId: String, appId: String) {
+
+        println("registration begin")
+        userManagement.register(
+            firstname = MultipartBody.Part.createFormData("firstname", firstname),
+            lastname = MultipartBody.Part.createFormData("lastname", "$lastName $middleName"),
+            email = MultipartBody.Part.createFormData("email", email),
+            password = MultipartBody.Part.createFormData("password", password),
+            phoneNumber = MultipartBody.Part.createFormData("phoneNumber", phoneNumber),
+            appId = MultipartBody.Part.createFormData("appId", appId),
+            deviceId = MultipartBody.Part.createFormData("deviceName", deviceId),
+            multipartBody = MultipartBody.Part.createFormData(
+                "image",
+                "image.png",
+                byteArray.toRequestBody(contentType = "image/png".toMediaType())
+            )
+        ).onEach { appResponse ->
+
+            when (appResponse) {
+                is AppResponse.Success -> {
+                    _registerState.value = RegisterResourcesState(data = appResponse.data)
+                }
+
+                is AppResponse.Loading -> {
+                    _registerState.value = RegisterResourcesState(isLoading = true)
+
+                }
+
+                else -> {
+                    //  the error case
+
+                    if (appResponse.code == 422) {
+                        appResponse.errorModalModel422?.let {
+                            it.errors.phoneNumber?.let { phoneNumberError ->
+                                phoneNumber = ""
+                                _mapError[FormNamesFirstStep.PHONE_NUMBER.name] =
+                                    phoneNumberError[0]
+                                currentPage = 1
+                            }
+
+                            it.errors.email?.let { emailErrors ->
+                                email = ""
+                                _mapError[FormNamesSecondStep.EMAIL.name] = emailErrors[0]
+                                if (currentPage != 1)
+                                    currentPage = 2
+                            }
+                        }
+
+
+                        _registerState.value = RegisterResourcesState()
+                    } else {
+                        _registerState.value = RegisterResourcesState(
+                            errorMessage = appResponse.message ?: "unexpected error just happened"
+                        )
+                    }
+
+
+                }
+            }
+        }.launchIn(viewModelScope)
+
+
+    }
+
+
     fun resolveImage(
         imageBytes: ByteArray
     ) {
@@ -179,6 +244,7 @@ class SignUpViewModel @Inject constructor(
 
     }
 
+
     fun clearImageAcceptance() {
         _isImageAccepted.value = false
     }
@@ -186,6 +252,7 @@ class SignUpViewModel @Inject constructor(
     fun clearImageResolveState() {
         _imageResolveState.value = ImageResolveState()
     }
+
 }
 
 

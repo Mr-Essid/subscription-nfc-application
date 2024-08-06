@@ -1,13 +1,13 @@
 package com.example.subscriptionbusapplication
 
-import androidx.core.app.NotificationCompat.MessagingStyle.Message
 import com.example.subscriptionbusapplication.data.models.ErrorModel422
 
 sealed class AppResponse<T>(
     val data: T? = null,
     val message: String? = null,
     val code: Int? = null,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val errorModalModel422: ErrorModel422? = null
 ) {
     class Success<T>(
         data: T? = null,
@@ -20,7 +20,13 @@ sealed class AppResponse<T>(
         code: Int?,
         isLoading: Boolean = false,
         errorModel422: ErrorModel422? = null
-    ) : AppResponse<T>(message = message, data = data, code = code, isLoading = isLoading)
+    ) : AppResponse<T>(
+        message = message,
+        data = data,
+        code = code,
+        isLoading = isLoading,
+        errorModalModel422 = errorModel422
+    )
 
 
     class Loading<T>(

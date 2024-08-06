@@ -2,7 +2,6 @@ package com.example.subscriptionbusapplication.data
 
 import com.example.subscriptionbusapplication.data.remote.ImageResolveAPI
 import com.example.subscriptionbusapplication.data.remote.SubscriptionAPI
-import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -28,7 +27,7 @@ object ImageResolverRetrofitInstance {
 }
 
 object SubscriptionServiceRetrofitInstance {
-    private const val BASE_URL = "http://192.168.95.97:8090"
+    private const val BASE_URL = "http://192.168.159.97:8090"
 
     fun getInstance(): SubscriptionAPI {
 
