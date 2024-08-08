@@ -99,7 +99,7 @@ fun EmailConfirmationScreen(
                 }
                 ExpendableContent(
                     title = "Quick Get In",
-                    textBody = "using our modern tech you to get into our lines, you only need the phone",
+                    textBody = "using our modern tech you only need the phone, to get into our lines",
                     currentState = benefitThree
                 ) {
                     benefitFour = false
@@ -130,7 +130,6 @@ fun EmailConfirmationScreen(
 
                         if (chooser.resolveActivity(context.packageManager) != null) {
                             (context as Activity).startActivity(chooser)
-                            navController?.popBackStack(Login, false)
                         }
                     }
                     Spacer(modifier = Modifier.width(8.dp))

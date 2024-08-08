@@ -10,9 +10,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,10 +49,14 @@ class HomeActivity : ComponentActivity() {
                         .background(
                             appSurfaceColor
                         )
-                        .padding(WindowInsets.statusBars.asPaddingValues())
+                        .windowInsetsPadding(WindowInsets.statusBars)
                 ) {
                     composable<Login> {
-                        LoginScreen(navController = navController)
+                        LoginScreen(
+                            navController = navController,
+                            deviceName = appId,
+                            appId = deviceId
+                        )
                     }
                     composable<SignUp> {
                         SignUpScreen(
@@ -67,6 +70,10 @@ class HomeActivity : ComponentActivity() {
                         EmailConfirmationScreen(
                             navController = navController
                         )
+                    }
+
+                    composable<Dashboard> {
+                        DashboardScreen()
                     }
 
 
@@ -111,6 +118,10 @@ data class SignUpLastStep(
 
 @Serializable
 object SignUp
+
+
+@Serializable
+object Dashboard
 
 
 data class DataFlowRapper(
