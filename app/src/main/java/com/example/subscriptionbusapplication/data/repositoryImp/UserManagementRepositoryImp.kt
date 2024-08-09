@@ -5,6 +5,7 @@ import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
 import com.example.subscriptionbusapplication.data.models.ErrorModel422
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
+import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
 import com.example.subscriptionbusapplication.data.models.User
 import com.example.subscriptionbusapplication.data.remote.ImageResolveAPI
 import com.example.subscriptionbusapplication.data.remote.SubscriptionAPI
@@ -191,5 +192,41 @@ class UserManagementRepositoryImp @Inject constructor(
         }
     }
 
+    override fun loadSubscriptions(token: String): Flow<AppResponse<List<SubscriptionDetails>?>> =
+        flow {
+
+            emit(AppResponse.Loading(isLoading = true, data = null))
+            try {
+
+                val fullToken = "Bearer $token"
+                val data = subscriptionAPI.loadSubscriptions(fullToken)
+
+                when (data.code()) {
+                    401 -> {
+                        emit(
+                            AppResponse.Error(
+                                message = "invalid token login again please",
+                                code = 401,
+                            )
+                        )
+                    }
+
+                    200 -> {
+                        emit(AppResponse.Success(data.body()!!))
+                    }
+
+                    else -> {
+                        emit(AppResponse.Error(message = data.message(), code = data.code()))
+                    }
+                }
+
+            } catch (e: IOException) {
+                // for all kind of network, socket error (timeout, connection error, write to closed socket)
+                emit(AppResponse.Error(message = e.localizedMessage, code = -1))
+            } catch (e: HttpException) {
+                // for all kind for server error
+                emit(AppResponse.Error(message = e.localizedMessage, code = -2))
+            }
+        }
 
 }

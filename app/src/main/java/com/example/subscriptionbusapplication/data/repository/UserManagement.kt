@@ -4,6 +4,7 @@ import com.example.subscriptionbusapplication.AppResponse
 import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
+import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
 import com.example.subscriptionbusapplication.data.models.User
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
@@ -33,4 +34,9 @@ interface UserManagement {
     fun loadCurrentClient(
         token: String
     ): Flow<AppResponse<ClientModel?>>
+
+
+    fun loadSubscriptions(
+        token: String
+    ): Flow<AppResponse<List<SubscriptionDetails>?>>
 }

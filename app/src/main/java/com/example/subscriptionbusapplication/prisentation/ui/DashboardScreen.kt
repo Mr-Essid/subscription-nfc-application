@@ -3,6 +3,7 @@ package com.example.subscriptionbusapplication.prisentation.ui
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -40,13 +42,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.subscriptionbusapplication.Constants
 import com.example.subscriptionbusapplication.R
 import com.example.subscriptionbusapplication.prisentation.static_component.ActiveSubscription
+import com.example.subscriptionbusapplication.prisentation.static_component.SubscriptionDetailsCard
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appPrimaryColor
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceColor
+import com.example.subscriptionbusapplication.prisentation.ui.theme.bodyText
 import com.example.subscriptionbusapplication.prisentation.ui.theme.h3
 import com.example.subscriptionbusapplication.prisentation.ui.theme.h4
 import com.example.subscriptionbusapplication.prisentation.viewmodel.DashboardViewModel
@@ -217,30 +222,84 @@ fun DashboardScreen(
                         }
 
 
-                    }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "available subscriptions",
+                            style = h3,
+                            color = appPrimaryColor.copy(alpha = 0.8f)
+                        )
 
-                    if (viewModel.currentClientSate.value.isLoading) {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "Available Zone", style = h4)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                painter = painterResource(id = R.drawable.mapicon),
+                                contentDescription = "map",
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        if (viewModel.mapOfZones.isNotEmpty()) {
+                            viewModel.mapOfZones.keys.forEach { zoneName ->
+                                Text(
+                                    text = "Zone ${zoneName.capitalize(Locale.ROOT)}",
+                                    style = bodyText.copy(fontSize = 16.sp)
+                                )
+                                Spacer(modifier = Modifier.height(height = 4.dp))
+                                Row(
+                                    modifier = Modifier
+                                        .horizontalScroll(rememberScrollState())
+                                        .padding(horizontal = 4.dp, vertical = 8.dp)
+                                ) {
+                                    viewModel.mapOfZones[zoneName]?.forEach { subscription ->
+                                        SubscriptionDetailsCard(subscriptionDetails = subscription)
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                    }
+                                }
+                            }
+
+                        }
+
+
+
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "Available Labels", style = h4)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                painter = painterResource(id = R.drawable.mapicon),
+                                contentDescription = "map",
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        if (viewModel.mapOfSubscriptionDetails.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            viewModel.mapOfSubscriptionDetails.keys.forEach { month ->
+                                Text(
+                                    text = "Subscription ${month.capitalize(Locale.ROOT)}",
+                                    style = bodyText.copy(fontSize = 16.sp)
+                                )
+                                Spacer(modifier = Modifier.height(height = 4.dp))
+                                Row(
+                                    modifier = Modifier
+                                        .horizontalScroll(rememberScrollState())
+                                        .padding(horizontal = 4.dp, vertical = 8.dp)
+                                ) {
+                                    viewModel.mapOfSubscriptionDetails[month]?.forEach { subscription ->
+                                        SubscriptionDetailsCard(subscriptionDetails = subscription)
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                    }
+                                }
+                            }
+
+
                         }
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "available subscriptions",
-                        style = h3,
-                        color = appPrimaryColor.copy(alpha = 0.8f)
-                    )
 
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Available Zone")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            painter = painterResource(id = R.drawable.mapicon),
-                            contentDescription = "map",
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
 
                     // user subscription screen
 
@@ -248,6 +307,12 @@ fun DashboardScreen(
 
                     // footer
                 }
+                if (viewModel.currentClientSate.value.isLoading) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+
             }
 
         }
