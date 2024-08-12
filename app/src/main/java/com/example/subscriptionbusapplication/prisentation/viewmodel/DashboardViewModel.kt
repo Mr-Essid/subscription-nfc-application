@@ -179,7 +179,7 @@ class DashboardViewModel @Inject constructor(
 
     fun updateCurrentClientWallet(newWalletValue: Double) {
         // there is no case of update current user and the user does not exists
-        _clientState.value = clientSate.value!!.copy(wallet = newWalletValue)
+        _clientState.value = _clientState.value!!.copy(wallet = newWalletValue)
     }
 
 

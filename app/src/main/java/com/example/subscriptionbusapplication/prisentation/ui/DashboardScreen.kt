@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.subscriptionbusapplication.Constants
 import com.example.subscriptionbusapplication.R
+import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscribeReturnModel
 import com.example.subscriptionbusapplication.prisentation.static_component.ActiveSubscription
 import com.example.subscriptionbusapplication.prisentation.static_component.SubscriptionDetailsCard
@@ -67,7 +68,7 @@ import java.util.Locale
 fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
     navController: NavController,
-    subscriptionReturnModel: SubscribeReturnModel? = null
+    subscriptionReturnModel: SubscribeResult? = null
 ) {
 
     var isActiveSessionExpended by remember {

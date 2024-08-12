@@ -62,6 +62,9 @@ fun SubscriptionDetailsScreen(
 
     val subscribe = viewModel.subscribeStat
 
+    var buttonIsDisabled by remember {
+        mutableStateOf(false)
+    }
 
     var isDialogShown by remember {
         mutableStateOf(false)
@@ -172,7 +175,7 @@ fun SubscriptionDetailsScreen(
 
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                enabled = viewModel.currentUserCanSubscribe,
+                enabled = viewModel.currentUserCanSubscribe && !buttonIsDisabled,
                 onClick = {
                     isDialogShown = true
                 },
@@ -234,11 +237,16 @@ fun SubscriptionDetailsScreen(
     }
 
     if (subscribe.value.isSuccess) {
-        navController.popBackStack(
-            Dashboard(
-                currentWallet = ""
-            ), false
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            "id-subscription",
+            subscribe.value.data!!.subscriptionXId
         )
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            "wallet",
+            subscribe.value.data!!.currentWallet
+        )
+
+        navController.popBackStack(Dashboard(), false)
     }
 
 
@@ -249,6 +257,7 @@ fun SubscriptionDetailsScreen(
     ) {
         ErrorTicketView(message = subscribe.value.errorMessage ?: "unexpected error just done") {
             viewModel.clearState()
+            buttonIsDisabled = false
         }
     }
 
@@ -261,7 +270,12 @@ fun SubscriptionDetailsScreen(
             state = AlertState.ALERT_INFO,
             onConfirmState = {
                 isDialogShown = false
+                buttonIsDisabled = true
                 viewModel.subscribe()
+            },
+            onDismiss = {
+                buttonIsDisabled = false
+                isDialogShown = false
             }
         )
     }

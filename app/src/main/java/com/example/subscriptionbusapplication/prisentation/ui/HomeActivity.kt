@@ -21,12 +21,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscribeReturnModel
+import com.example.subscriptionbusapplication.helpers.CustomNavTypes
 import com.example.subscriptionbusapplication.prisentation.ui.theme.SubscriptionBusApplicationTheme
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceColor
 import com.example.subscriptionbusapplication.prisentation.viewmodel.SubscriptionDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
+import kotlin.reflect.typeOf
 
 @AndroidEntryPoint
 class HomeActivity : ComponentActivity() {
@@ -77,11 +80,25 @@ class HomeActivity : ComponentActivity() {
                         )
                     }
 
-                    composable<Dashboard> { backStackEntry ->
-                        val backStackEntryDashboard = backStackEntry.toRoute<Dashboard>()
+                    composable<Dashboard>(
+                        typeMap = mapOf(
+                            typeOf<SubscribeResult?>() to CustomNavTypes.DashboardNavType
+                        )
+                    ) { backStackEntry ->
+                        val idSubscription =
+                            backStackEntry.savedStateHandle.get<Int>("id-subscription")
+                        backStackEntry.savedStateHandle.remove<Int>("id-subscription")
+                        val walletValue = backStackEntry.savedStateHandle.get<Double>("wallet")
 
+                        backStackEntry.savedStateHandle.remove<Double>("wallet")
+                        val sub =
+                            if (idSubscription != null && walletValue != null) SubscribeResult(
+                                idSubscription,
+                                walletValue
+                            ) else null
                         DashboardScreen(
                             navController = navController,
+                            subscriptionReturnModel = sub
                         )
                     }
 
@@ -148,11 +165,9 @@ data class SignUpLastStep(
 @Serializable
 object SignUp
 
-
 @Serializable
-class Dashboard(
-    val currentWallet: String = "0.o",
-    val idSubscription: String
+data class Dashboard(
+    val returnTypeModel: SubscribeResult? = null
 )
 
 

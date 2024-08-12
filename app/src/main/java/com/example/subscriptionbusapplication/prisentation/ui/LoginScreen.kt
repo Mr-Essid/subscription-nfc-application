@@ -61,7 +61,7 @@ fun LoginScreen(
 
     if (loginStatus.value.isSuccess) {
 
-        navController.navigate(Dashboard(currentWallet = "")) {
+        navController.navigate(Dashboard()) {
             popUpTo(0)
         }
         viewModel.clearState()
