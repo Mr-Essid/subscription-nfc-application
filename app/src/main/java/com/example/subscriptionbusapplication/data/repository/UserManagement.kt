@@ -4,7 +4,10 @@ import com.example.subscriptionbusapplication.AppResponse
 import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
+import com.example.subscriptionbusapplication.data.models.SubscribeResult
+import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetailsDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
+import com.example.subscriptionbusapplication.data.models.SubscriptionX
 import com.example.subscriptionbusapplication.data.models.User
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
@@ -39,4 +42,21 @@ interface UserManagement {
     fun loadSubscriptions(
         token: String
     ): Flow<AppResponse<List<SubscriptionDetails>?>>
+
+    fun loadSubscription(
+        token: String,
+        subscriptionId: Int
+    ): Flow<AppResponse<SubscriptionAllDetailsDetails?>>
+
+
+    fun subscribe(
+        token: String,
+        subscriptionId: Int
+    ): Flow<AppResponse<SubscribeResult?>>
+
+
+    fun getSubscriptionXDetails(
+        token: String,
+        subscriptionXId: Int
+    ): Flow<AppResponse<SubscriptionX?>>
 }

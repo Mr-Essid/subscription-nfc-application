@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,9 +45,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.subscriptionbusapplication.Constants
 import com.example.subscriptionbusapplication.R
+import com.example.subscriptionbusapplication.data.models.SubscribeReturnModel
 import com.example.subscriptionbusapplication.prisentation.static_component.ActiveSubscription
 import com.example.subscriptionbusapplication.prisentation.static_component.SubscriptionDetailsCard
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appPrimaryColor
@@ -62,13 +65,25 @@ import java.util.Locale
 
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardViewModel = hiltViewModel()
+    viewModel: DashboardViewModel = hiltViewModel(),
+    navController: NavController,
+    subscriptionReturnModel: SubscribeReturnModel? = null
 ) {
 
     var isActiveSessionExpended by remember {
         mutableStateOf(false)
     }
 
+
+    LaunchedEffect(key1 = subscriptionReturnModel) {
+        if (subscriptionReturnModel != null) {
+            viewModel.updateCurrentClientWallet(subscriptionReturnModel.currentWallet)
+            viewModel.loadSubscriptionXById(subscriptionReturnModel.subscriptionXId)
+        }
+    }
+
+    val clientState = viewModel.clientSate
+    val clientListSubscription = viewModel.currentListOfSubscriptions
 
 
     Scaffold {
@@ -106,7 +121,7 @@ fun DashboardScreen(
                     }
 
                 }
-                viewModel.currentClientSate.value.data?.let { currentUser ->
+                clientState.value?.let { currentUser ->
 
                     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
 
@@ -139,8 +154,7 @@ fun DashboardScreen(
                                     .padding(horizontal = 16.dp)
 
                             ) {
-
-
+                                println("${Constants.BASE_URL}${currentUser.imagePath}")
                                 AsyncImage(
                                     model = "${Constants.BASE_URL}${currentUser.imagePath}",
                                     contentDescription = "person photo",
@@ -192,7 +206,7 @@ fun DashboardScreen(
                             }
 
                             val transition = animateIntAsState(
-                                targetValue = if (isActiveSessionExpended) currentUser.subscriptions.size else 3,
+                                targetValue = if (isActiveSessionExpended) clientListSubscription.size else 3,
                                 label = "expend active sessions"
                             )
 
@@ -204,7 +218,7 @@ fun DashboardScreen(
                                     color = appPrimaryColor
                                 )
 
-                                if (currentUser.subscriptions.size > 3)
+                                if (clientListSubscription.size > 3)
                                     IconButton(onClick = {
                                         isActiveSessionExpended = !isActiveSessionExpended
                                     }) {
@@ -215,10 +229,21 @@ fun DashboardScreen(
                                     }
                             }
 
-                            for (subscriptionX in currentUser.subscriptions.take(transition.value)) {
-                                ActiveSubscription(subscriptionX = subscriptionX)
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
+                            if (clientListSubscription.isEmpty()) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 32.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("Not Active Subscriptions yet", style = h3)
+                                }
+                            } else
+
+                                for (subscriptionX in clientListSubscription.take(transition.value)) {
+                                    ActiveSubscription(subscriptionX = subscriptionX)
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
                         }
 
 
@@ -254,7 +279,14 @@ fun DashboardScreen(
                                         .padding(horizontal = 4.dp, vertical = 8.dp)
                                 ) {
                                     viewModel.mapOfZones[zoneName]?.forEach { subscription ->
-                                        SubscriptionDetailsCard(subscriptionDetails = subscription)
+                                        SubscriptionDetailsCard(subscriptionDetails = subscription) {
+                                            navController.navigate(
+                                                SubscriptionDetails(
+                                                    subscription.id,
+                                                    currentUser.wallet >= subscription.price
+                                                )
+                                            )
+                                        }
                                         Spacer(modifier = Modifier.width(8.dp))
                                     }
                                 }
@@ -270,7 +302,7 @@ fun DashboardScreen(
                             Text(text = "Available Labels", style = h4)
                             Spacer(modifier = Modifier.width(8.dp))
                             Icon(
-                                painter = painterResource(id = R.drawable.mapicon),
+                                painter = painterResource(id = R.drawable.label),
                                 contentDescription = "map",
                                 modifier = Modifier.size(22.dp)
                             )
@@ -290,7 +322,14 @@ fun DashboardScreen(
                                         .padding(horizontal = 4.dp, vertical = 8.dp)
                                 ) {
                                     viewModel.mapOfSubscriptionDetails[month]?.forEach { subscription ->
-                                        SubscriptionDetailsCard(subscriptionDetails = subscription)
+                                        SubscriptionDetailsCard(subscriptionDetails = subscription) {
+                                            navController.navigate(
+                                                SubscriptionDetails(
+                                                    subscription.id,
+                                                    currentUser.wallet >= subscription.price
+                                                )
+                                            )
+                                        }
                                         Spacer(modifier = Modifier.width(8.dp))
                                     }
                                 }
@@ -307,12 +346,11 @@ fun DashboardScreen(
 
                     // footer
                 }
-                if (viewModel.currentClientSate.value.isLoading) {
+                if (viewModel.currentClientLoadState.value.isLoading) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
-
             }
 
         }
@@ -323,5 +361,4 @@ fun DashboardScreen(
 @Preview
 @Composable
 private fun MainDashboard() {
-    DashboardScreen()
 }

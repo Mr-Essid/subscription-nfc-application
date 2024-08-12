@@ -1,5 +1,6 @@
 package com.example.subscriptionbusapplication.data
 
+import com.example.subscriptionbusapplication.Constants
 import com.example.subscriptionbusapplication.data.remote.ImageResolveAPI
 import com.example.subscriptionbusapplication.data.remote.SubscriptionAPI
 import com.example.subscriptionbusapplication.helpers.LocalDateJsonAdapter
@@ -31,7 +32,7 @@ object ImageResolverRetrofitInstance {
 }
 
 object SubscriptionServiceRetrofitInstance {
-    private const val BASE_URL = "http://192.168.159.97:8090"
+    private val BASE_URL = Constants.BASE_URL
 
     fun getInstance(): SubscriptionAPI {
 

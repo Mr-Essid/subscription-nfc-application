@@ -34,45 +34,69 @@ import java.util.Locale
 @Composable
 fun SubscriptionDetailsCard(
     subscriptionDetails: SubscriptionDetails,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onclick: () -> Unit
 ) {
 
     Card(
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = appPrimaryColor.copy(0.2f)),
-        onClick = {}
+        onClick = onclick
     ) {
         Column(
             Modifier
                 .width(180.dp)
-                .padding(horizontal = 8.dp, vertical = 4.dp)) {
-            Row(modifier = Modifier
-                .padding(vertical = 4.dp)
-                .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(painter = painterResource(id = R.drawable.label), contentDescription = "icon")
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "${subscriptionDetails.months} Month Subscription".capitalize(Locale.ROOT), style = h4)
+                Text(
+                    text = "${subscriptionDetails.months} Month Subscription".capitalize(Locale.ROOT),
+                    style = h4
+                )
             }
-            Row(modifier = Modifier
-                .padding(vertical = 4.dp)
-                .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Icon(painter = painterResource(id = R.drawable.placeholder), contentDescription = "icon")
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.placeholder),
+                    contentDescription = "icon"
+                )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "Zone ${subscriptionDetails.zoneName}".capitalize(Locale.ROOT), style = h4)
+                Text(
+                    text = "Zone ${subscriptionDetails.zoneName}".capitalize(Locale.ROOT),
+                    style = h4
+                )
             }
-            Row(modifier = Modifier
-                .padding(vertical = 4.dp)
-                .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Icon(painter = painterResource(id = R.drawable.dinartn), contentDescription = "icon")
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.dinartn),
+                    contentDescription = "icon"
+                )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(text = "${subscriptionDetails.price}dt", style = h4)
             }
-            Row(modifier = Modifier
-                .padding(vertical = 4.dp)
-                .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
-                ) {
-                Icon(painter = painterResource(id = R.drawable.baseline_more_horiz_24), contentDescription = "icon")
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_more_horiz_24),
+                    contentDescription = "icon"
+                )
             }
         }
     }
@@ -94,8 +118,6 @@ private fun SubscriptionDetailsCardPrev() {
 
 
     Column(Modifier.padding(horizontal = 20.dp)) {
-
         Spacer(modifier = Modifier.height(40.dp))
-        SubscriptionDetailsCard(subscriptionDetails = subscriptionDetails)
     }
 }

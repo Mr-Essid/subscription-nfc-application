@@ -1,13 +1,21 @@
 package com.example.subscriptionbusapplication.prisentation.static_component
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.style.TextAlign
@@ -19,12 +27,9 @@ import com.example.subscriptionbusapplication.prisentation.ui.theme.appPrimaryCo
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceColor
 import com.example.subscriptionbusapplication.prisentation.ui.theme.errorColor
 import com.example.subscriptionbusapplication.prisentation.ui.theme.h2
-import com.example.subscriptionbusapplication.prisentation.ui.theme.h3
 import com.example.subscriptionbusapplication.prisentation.ui.theme.h4
 import com.example.subscriptionbusapplication.prisentation.ui.theme.onErrorColor
-import java.lang.reflect.Modifier
 import java.util.Locale
-
 
 enum class AlertState {
     ALERT_ERROR,
@@ -48,8 +53,27 @@ fun AppAlert(
     }
 
     AlertDialog(
-        onDismissRequest = { /*TODO*/ },
-        confirmButton = { /*TODO*/ },
+        onDismissRequest = {
+
+        },
+        confirmButton = {
+            if (onConfirmState != null) {
+                Button(onClick = {
+                    onConfirmState()
+                }) {
+                   Text(text = "confirm")
+                }
+            }
+        },
+        dismissButton = {
+            if (onDismiss != null) {
+               OutlinedButton(onClick = {
+                   onDismiss()
+               }) {
+                  Text(text = "cancel")
+               }
+            }
+        },
         title = {
             Text(
                 text = title.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
@@ -96,7 +120,30 @@ private fun AlertPrev() {
         AppAlert(
             title = "simpleTitle",
             bodyText = "this is simple error body, given condition of error",
-            state = AlertState.ALERT_SUCCESS
+            state = AlertState.ALERT_SUCCESS,
+        )
+    }
+
+}
+
+
+@Preview
+@Composable
+private fun AlertStateInfo() {
+
+    Box(
+        contentAlignment = Alignment.Center,
+    ) {
+        AppAlert(
+            title = "simpleTitle",
+            bodyText = "this is confirmation button to confirm action you wanna do",
+            state = AlertState.ALERT_INFO,
+            onDismiss = {
+
+            },
+            onConfirmState = {
+
+            }
         )
     }
 

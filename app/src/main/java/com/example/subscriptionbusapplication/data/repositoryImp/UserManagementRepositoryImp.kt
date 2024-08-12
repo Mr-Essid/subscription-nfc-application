@@ -1,11 +1,16 @@
 package com.example.subscriptionbusapplication.data.repositoryImp
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.example.subscriptionbusapplication.AppResponse
 import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
 import com.example.subscriptionbusapplication.data.models.ErrorModel422
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
+import com.example.subscriptionbusapplication.data.models.SubscribeResult
+import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetailsDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
+import com.example.subscriptionbusapplication.data.models.SubscriptionX
 import com.example.subscriptionbusapplication.data.models.User
 import com.example.subscriptionbusapplication.data.remote.ImageResolveAPI
 import com.example.subscriptionbusapplication.data.remote.SubscriptionAPI
@@ -228,5 +233,146 @@ class UserManagementRepositoryImp @Inject constructor(
                 emit(AppResponse.Error(message = e.localizedMessage, code = -2))
             }
         }
+
+    override fun loadSubscription(
+        token: String,
+        subscriptionId: Int
+    ): Flow<AppResponse<SubscriptionAllDetailsDetails?>> = flow {
+
+        emit(AppResponse.Loading(isLoading = true, data = null))
+        val tokenCorrect = "Bearer $token"
+        try {
+
+            val response = subscriptionAPI.loadSubscriptionById(tokenCorrect, subscriptionId)
+
+            when (response.code()) {
+                401 -> {
+                    emit(
+                        AppResponse.Error(
+                            code = 401,
+                            message = "unauthorized request"
+                        )
+                    ) // it may due the session is expired
+                }
+
+                404 -> {
+                    emit(AppResponse.Error(code = 404, message = "currently resource not exists"))
+                }
+
+                200 -> {
+                    emit(AppResponse.Success(data = response.body()))
+                }
+
+                else -> {
+
+                    emit(
+                        AppResponse.Error(
+                            code = response.code(),
+                            message = response.message() ?: "unexpected error just done"
+                        )
+                    )
+                }
+            }
+        } catch (e: IOException) {
+            emit(AppResponse.Error(message = e.localizedMessage, code = -1))
+        } catch (e: HttpException) {
+            emit(AppResponse.Error(message = e.localizedMessage, code = -2))
+        }
+
+
+    }
+
+    override fun subscribe(
+        token: String,
+        subscriptionId: Int
+    ): Flow<AppResponse<SubscribeResult?>> = flow {
+
+        emit(AppResponse.Loading(isLoading = true, data = null))
+        val tokenCorrect = "Bearer $token"
+        try {
+            val response = subscriptionAPI.subscribe(tokenCorrect, subscriptionId)
+            when (response.code()) {
+                401 -> {
+                    emit(
+                        AppResponse.Error(
+                            code = 401,
+                            message = "unauthorized request"
+                        )
+                    ) // it may due the session is expired
+                }
+
+                404 -> {
+                    emit(AppResponse.Error(code = 404, message = "currently resource not exists"))
+                }
+
+                200 -> {
+                    emit(AppResponse.Success(data = response.body()))
+                }
+
+                else -> {
+
+                    emit(
+                        AppResponse.Error(
+                            code = response.code(),
+                            message = response.message() ?: "unexpected error just done"
+                        )
+                    )
+                }
+            }
+        } catch (e: IOException) {
+            emit(AppResponse.Error(message = e.localizedMessage, code = -1))
+        } catch (e: HttpException) {
+            emit(AppResponse.Error(message = e.localizedMessage, code = -2))
+        }
+
+
+    }
+
+
+    override fun getSubscriptionXDetails(
+        token: String,
+        subscriptionXId: Int
+    ): Flow<AppResponse<SubscriptionX?>> = flow {
+
+        emit(AppResponse.Loading(isLoading = true, data = null))
+        val tokenCorrect = "Bearer $token"
+        try {
+            val response = subscriptionAPI.subscriptionXById(tokenCorrect, subscriptionXId)
+            when (response.code()) {
+                401 -> {
+                    emit(
+                        AppResponse.Error(
+                            code = 401,
+                            message = "unauthorized request"
+                        )
+                    ) // it may due the session is expired
+                }
+
+                404 -> {
+                    emit(AppResponse.Error(code = 404, message = "currently resource not exists"))
+                }
+
+                200 -> {
+                    emit(AppResponse.Success(data = response.body()))
+                }
+
+                else -> {
+
+                    emit(
+                        AppResponse.Error(
+                            code = response.code(),
+                            message = response.message() ?: "unexpected error just done"
+                        )
+                    )
+                }
+            }
+        } catch (e: IOException) {
+            emit(AppResponse.Error(message = e.localizedMessage, code = -1))
+        } catch (e: HttpException) {
+            emit(AppResponse.Error(message = e.localizedMessage, code = -2))
+        }
+
+
+    }
 
 }

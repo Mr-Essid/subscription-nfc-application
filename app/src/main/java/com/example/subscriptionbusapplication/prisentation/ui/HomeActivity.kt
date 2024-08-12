@@ -8,6 +8,7 @@ import android.provider.Settings.Secure.ANDROID_ID
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.statusBars
@@ -15,11 +16,15 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.example.subscriptionbusapplication.data.models.SubscribeReturnModel
 import com.example.subscriptionbusapplication.prisentation.ui.theme.SubscriptionBusApplicationTheme
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceColor
+import com.example.subscriptionbusapplication.prisentation.viewmodel.SubscriptionDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
 
@@ -72,10 +77,27 @@ class HomeActivity : ComponentActivity() {
                         )
                     }
 
-                    composable<Dashboard> {
-                        DashboardScreen()
+                    composable<Dashboard> { backStackEntry ->
+                        val backStackEntryDashboard = backStackEntry.toRoute<Dashboard>()
+
+                        DashboardScreen(
+                            navController = navController,
+                        )
                     }
 
+                    composable<SubscriptionDetails> {
+                        val argument = it.toRoute<SubscriptionDetails>()
+                        SubscriptionDetailsScreen(
+                            viewModel = hiltViewModel<SubscriptionDetailsViewModel, SubscriptionDetailsViewModel.Factory> { factory ->
+                                factory.create(
+                                    argument.subscriptionDetailsId,
+                                    currentUserCanSubscribe = argument.canCurrentClientSubscribe
+                                )
+                            },
+                            navController
+                        )
+
+                    }
 
                 }
 
@@ -95,6 +117,13 @@ object SignUpFirstStep
 
 @Serializable
 object EmailConfirmation
+
+
+@Serializable
+class SubscriptionDetails(
+    val subscriptionDetailsId: Int,
+    val canCurrentClientSubscribe: Boolean
+)
 
 
 @Serializable
@@ -121,7 +150,10 @@ object SignUp
 
 
 @Serializable
-object Dashboard
+class Dashboard(
+    val currentWallet: String = "0.o",
+    val idSubscription: String
+)
 
 
 data class DataFlowRapper(
@@ -170,12 +202,4 @@ fun DataFlowRapper.isDataCollected(): Boolean {
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SubscriptionBusApplicationTheme(
-        darkTheme = false
-    ) {
 
-    }
-}

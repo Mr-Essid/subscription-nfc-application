@@ -2,7 +2,10 @@ package com.example.subscriptionbusapplication.data.remote
 
 import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
+import com.example.subscriptionbusapplication.data.models.SubscribeResult
+import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetailsDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
+import com.example.subscriptionbusapplication.data.models.SubscriptionX
 import com.example.subscriptionbusapplication.data.models.User
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -12,6 +15,7 @@ import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface SubscriptionAPI {
 
@@ -41,9 +45,35 @@ interface SubscriptionAPI {
     ): Response<AccessTokenModel?>
 
 
+    @Headers("Accept: application/json")
     @GET("/api/current-client")
     suspend fun loadCurrentClient(@Header("Authorization") token: String): Response<ClientModel>
 
+    @Headers("Accept: application/json")
     @GET("/api/subscriptions")
     suspend fun loadSubscriptions(@Header("Authorization") token: String): Response<List<SubscriptionDetails>>
+
+    @Headers("Accept: application/json")
+    @GET("/api/subscriptions/{subscription_id}")
+    suspend fun loadSubscriptionById(
+        @Header("Authorization") token: String,
+        @Path("subscription_id") subscriptionId: Int
+    ): Response<SubscriptionAllDetailsDetails>
+
+
+    @Headers("Accept: application/json")
+    @POST("/api/subscriptions/subscribtion/{subscription_id}")
+    suspend fun subscribe(
+        @Header("Authorization") token: String,
+        @Path("subscription_id") subscriptionId: Int
+    ): Response<SubscribeResult?>
+
+
+    @Headers("Accept: application/json")
+    @GET("/api/subscriptions/current-client_/subscriptionx/{subscriptionx_id}")
+    suspend fun subscriptionXById(
+        @Header("Authorization") token: String,
+        @Path("subscriptionx_id") subscriptionId: Int
+    ): Response<SubscriptionX?>
+
 }
