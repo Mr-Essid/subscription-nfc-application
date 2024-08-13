@@ -56,11 +56,8 @@ class DashboardViewModel @Inject constructor(
 
 
     init {
-
-
         loadCurrentUser()
         loadSubscriptions()
-
     }
 
 

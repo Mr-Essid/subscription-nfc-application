@@ -19,12 +19,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,8 +54,10 @@ import com.example.subscriptionbusapplication.Constants
 import com.example.subscriptionbusapplication.R
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscribeReturnModel
+import com.example.subscriptionbusapplication.data.models.SubscriptionX
 import com.example.subscriptionbusapplication.prisentation.static_component.ActiveSubscription
 import com.example.subscriptionbusapplication.prisentation.static_component.SubscriptionDetailsCard
+import com.example.subscriptionbusapplication.prisentation.static_component.SubscriptionXDetailsView
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appPrimaryColor
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceColor
 import com.example.subscriptionbusapplication.prisentation.ui.theme.bodyText
@@ -64,6 +69,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
@@ -74,6 +80,14 @@ fun DashboardScreen(
     var isActiveSessionExpended by remember {
         mutableStateOf(false)
     }
+
+
+    val bottomSheetModalState = rememberModalBottomSheetState()
+
+    var bottomSheetCurrentFocus by remember {
+        mutableStateOf<SubscriptionX?>(null)
+    }
+
 
 
     LaunchedEffect(key1 = subscriptionReturnModel) {
@@ -242,7 +256,9 @@ fun DashboardScreen(
                             } else
 
                                 for (subscriptionX in clientListSubscription.take(transition.value)) {
-                                    ActiveSubscription(subscriptionX = subscriptionX)
+                                    ActiveSubscription(subscriptionX = subscriptionX) {
+                                        bottomSheetCurrentFocus = subscriptionX
+                                    }
                                     Spacer(modifier = Modifier.height(8.dp))
                                 }
                         }
@@ -352,6 +368,23 @@ fun DashboardScreen(
                         CircularProgressIndicator()
                     }
                 }
+
+
+                bottomSheetCurrentFocus?.let {
+                    ModalBottomSheet(
+                        onDismissRequest = {
+                            bottomSheetCurrentFocus = null
+                        },
+                        sheetState = bottomSheetModalState
+                    ) {
+                        Box(modifier = Modifier.background(appSurfaceColor).padding(vertical = 8.dp)) {
+
+                            SubscriptionXDetailsView(subscriptionDetailsX = it)
+                        }
+                    }
+                }
+
+
             }
 
         }

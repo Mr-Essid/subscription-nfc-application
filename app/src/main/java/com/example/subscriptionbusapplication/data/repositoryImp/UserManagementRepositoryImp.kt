@@ -1,14 +1,12 @@
 package com.example.subscriptionbusapplication.data.repositoryImp
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import com.example.subscriptionbusapplication.AppResponse
 import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
 import com.example.subscriptionbusapplication.data.models.ErrorModel422
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
-import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetailsDetails
+import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionX
 import com.example.subscriptionbusapplication.data.models.User
@@ -237,7 +235,7 @@ class UserManagementRepositoryImp @Inject constructor(
     override fun loadSubscription(
         token: String,
         subscriptionId: Int
-    ): Flow<AppResponse<SubscriptionAllDetailsDetails?>> = flow {
+    ): Flow<AppResponse<SubscriptionAllDetails?>> = flow {
 
         emit(AppResponse.Loading(isLoading = true, data = null))
         val tokenCorrect = "Bearer $token"

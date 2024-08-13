@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,11 +32,14 @@ import java.util.Locale
 @Composable
 fun ActiveSubscription(
     subscriptionX: SubscriptionX,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
 
+
     OutlinedCard(
-        onClick = { /*TODO*/ },
+        onClick = { onClick?.invoke() }
+
     ) {
 
         Column(
@@ -98,24 +103,3 @@ fun ActiveSubscription(
     }
 }
 
-
-@Preview(showSystemUi = true)
-@Composable
-private fun ActiveSubscriptionPrev() {
-    val subscriptionX = SubscriptionX(
-        from = LocalDate.now(),
-        to = LocalDate.now().plusDays(20),
-        id = 10,
-        subscriptionDetails = SubscriptionDetails(
-            id = 2,
-            labelFrench = "simple label",
-            label = "label",
-            months = 3,
-            price = 20.0,
-            zoneName = "charguia"
-        )
-    )
-
-    ActiveSubscription(subscriptionX = subscriptionX)
-
-}

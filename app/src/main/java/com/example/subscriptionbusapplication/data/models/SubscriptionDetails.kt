@@ -7,4 +7,5 @@ data class SubscriptionDetails(
     val months: Int,
     val price: Double,
     val zoneName: String
+
 )

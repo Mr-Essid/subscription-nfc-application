@@ -1,6 +1,6 @@
 package com.example.subscriptionbusapplication.data.models
 
-data class SubscriptionAllDetailsDetails(
+data class SubscriptionAllDetails(
     val days: List<Day>,
     val id: Int,
     val label: String,

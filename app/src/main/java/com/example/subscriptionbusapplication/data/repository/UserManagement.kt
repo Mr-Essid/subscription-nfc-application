@@ -5,7 +5,7 @@ import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
-import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetailsDetails
+import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionX
 import com.example.subscriptionbusapplication.data.models.User
@@ -46,7 +46,7 @@ interface UserManagement {
     fun loadSubscription(
         token: String,
         subscriptionId: Int
-    ): Flow<AppResponse<SubscriptionAllDetailsDetails?>>
+    ): Flow<AppResponse<SubscriptionAllDetails?>>
 
 
     fun subscribe(

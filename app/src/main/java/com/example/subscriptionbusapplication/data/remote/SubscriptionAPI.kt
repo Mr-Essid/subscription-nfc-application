@@ -3,7 +3,7 @@ package com.example.subscriptionbusapplication.data.remote
 import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
-import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetailsDetails
+import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionX
 import com.example.subscriptionbusapplication.data.models.User
@@ -58,7 +58,7 @@ interface SubscriptionAPI {
     suspend fun loadSubscriptionById(
         @Header("Authorization") token: String,
         @Path("subscription_id") subscriptionId: Int
-    ): Response<SubscriptionAllDetailsDetails>
+    ): Response<SubscriptionAllDetails>
 
 
     @Headers("Accept: application/json")
