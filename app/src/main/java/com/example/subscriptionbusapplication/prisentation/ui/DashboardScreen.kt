@@ -1,6 +1,9 @@
 package com.example.subscriptionbusapplication.prisentation.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -50,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import com.example.subscriptionbusapplication.Constants
 import com.example.subscriptionbusapplication.R
@@ -57,6 +61,8 @@ import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscribeReturnModel
 import com.example.subscriptionbusapplication.data.models.SubscriptionX
 import com.example.subscriptionbusapplication.prisentation.static_component.ActiveSubscription
+import com.example.subscriptionbusapplication.prisentation.static_component.ErrorTicketView
+import com.example.subscriptionbusapplication.prisentation.static_component.InfoTicketView
 import com.example.subscriptionbusapplication.prisentation.static_component.SubscriptionDetailsCard
 import com.example.subscriptionbusapplication.prisentation.static_component.SubscriptionXDetailsView
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appPrimaryColor
@@ -75,6 +81,7 @@ import java.util.Locale
 fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
     navController: NavController,
+    messageBack: String? = null,
     subscriptionReturnModel: SubscribeResult? = null
 ) {
 
@@ -89,12 +96,16 @@ fun DashboardScreen(
         mutableStateOf<SubscriptionX?>(null)
     }
 
+    var showSuccessSubscriptionMessage by remember {
+        mutableStateOf(false)
+    }
 
 
     LaunchedEffect(key1 = subscriptionReturnModel) {
         if (subscriptionReturnModel != null) {
             viewModel.updateCurrentClientWallet(subscriptionReturnModel.currentWallet)
             viewModel.loadSubscriptionXById(subscriptionReturnModel.subscriptionXId)
+            showSuccessSubscriptionMessage = true
         }
     }
 
@@ -135,7 +146,11 @@ fun DashboardScreen(
                             contentDescription = "account info",
                             modifier = Modifier.clickable {
                                 viewModel.clientSate.value?.let { clientState ->
-                                    navController.navigate(ClientStateNav.fromClientState(clientState))
+                                    navController.navigate(
+                                        ClientStateNav.fromClientState(
+                                            clientState
+                                        )
+                                    )
                                 }
                             }
                         )
@@ -215,9 +230,9 @@ fun DashboardScreen(
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
                                         text = "Wallet: ${
-                                            currentUser.wallet.toString().capitalize(
-                                                Locale.ROOT
-                                            )
+                                            currentUser.wallet.toString()
+                                                .split(".")[0] + "." + currentUser.wallet.toString()
+                                                .split("0").getOrElse(1) { 0 }.toString().take(1)
                                         } dt",
                                         style = h4,
                                         maxLines = 1,
@@ -366,9 +381,12 @@ fun DashboardScreen(
                     // user subscription screen
 
                     // available subscriptions
-
                     // footer
                 }
+
+
+
+
                 if (viewModel.currentClientLoadState.value.isLoading) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
@@ -383,7 +401,11 @@ fun DashboardScreen(
                         },
                         sheetState = bottomSheetModalState
                     ) {
-                        Box(modifier = Modifier.background(appSurfaceColor).padding(vertical = 8.dp)) {
+                        Box(
+                            modifier = Modifier
+                                .background(appSurfaceColor)
+                                .padding(vertical = 8.dp)
+                        ) {
 
                             SubscriptionXDetailsView(subscriptionDetailsX = it)
                         }
@@ -392,7 +414,15 @@ fun DashboardScreen(
 
 
             }
-
+            AnimatedVisibility(
+                visible = showSuccessSubscriptionMessage,
+                enter = slideInHorizontally(),
+                exit = slideOutHorizontally()
+            ) {
+                InfoTicketView(message = "subscription done successfully") {
+                    showSuccessSubscriptionMessage = false
+                }
+            }
         }
     }
 }

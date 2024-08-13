@@ -27,6 +27,7 @@ import com.example.subscriptionbusapplication.helpers.CustomNavTypes
 import com.example.subscriptionbusapplication.prisentation.ui.states.ClientState
 import com.example.subscriptionbusapplication.prisentation.ui.theme.SubscriptionBusApplicationTheme
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceColor
+import com.example.subscriptionbusapplication.prisentation.viewmodel.ChangePasswordViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.ProfileViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.SubscriptionDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -82,25 +83,23 @@ class HomeActivity : ComponentActivity() {
                         )
                     }
 
-                    composable<Dashboard>(
-                        typeMap = mapOf(
-                            typeOf<SubscribeResult?>() to CustomNavTypes.DashboardNavType
-                        )
-                    ) { backStackEntry ->
+                    composable<Dashboard> { backStackEntry ->
                         val idSubscription =
                             backStackEntry.savedStateHandle.get<Int>("id-subscription")
                         backStackEntry.savedStateHandle.remove<Int>("id-subscription")
                         val walletValue = backStackEntry.savedStateHandle.get<Double>("wallet")
-
                         backStackEntry.savedStateHandle.remove<Double>("wallet")
                         val sub =
                             if (idSubscription != null && walletValue != null) SubscribeResult(
                                 idSubscription,
                                 walletValue
                             ) else null
+
+                        val messageBack = backStackEntry.toRoute<Dashboard>().messageBack
                         DashboardScreen(
                             navController = navController,
-                            subscriptionReturnModel = sub
+                            subscriptionReturnModel = sub,
+                            messageBack = messageBack
                         )
                     }
 
@@ -130,6 +129,13 @@ class HomeActivity : ComponentActivity() {
 
                     }
 
+                    composable<ChangePassword> {
+                        ChangePasswordScreen(
+                            changePasswordViewModel = hiltViewModel<ChangePasswordViewModel>(),
+                            navController = navController
+                        )
+
+                    }
                 }
 
             }
@@ -214,9 +220,13 @@ fun ClientStateNav.toClientState(): ClientState {
 @Serializable
 object SignUp
 
+
+@Serializable
+object ChangePassword
+
 @Serializable
 data class Dashboard(
-    val returnTypeModel: SubscribeResult? = null
+    val messageBack: String? = null
 )
 
 

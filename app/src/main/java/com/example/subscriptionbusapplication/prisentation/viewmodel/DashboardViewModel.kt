@@ -162,7 +162,7 @@ class DashboardViewModel @Inject constructor(
 
                 is AppResponse.Success -> {
                     assert(appResponse.data != null)
-                    _currentListOfSubscriptions.add(appResponse.data!!)
+                    _currentListOfSubscriptions.add(0, appResponse.data!!)
                     Log.d(TAG, "loadSubscriptionXById: ${_currentClientLoadState.value}")
                 }
 

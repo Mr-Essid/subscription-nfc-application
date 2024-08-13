@@ -28,6 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.subscriptionbusapplication.R
+import com.example.subscriptionbusapplication.prisentation.ui.theme.appInfoColor
+import com.example.subscriptionbusapplication.prisentation.ui.theme.appOnInfoColor
 import com.example.subscriptionbusapplication.prisentation.ui.theme.errorColor
 import com.example.subscriptionbusapplication.prisentation.ui.theme.h2
 
@@ -65,6 +67,37 @@ fun ErrorTicketView(modifier: Modifier = Modifier, message: String, onClick: () 
 }
 
 
+@Composable
+fun InfoTicketView(modifier: Modifier = Modifier, message: String, onClick: () -> Unit) {
+
+    OutlinedCard(
+
+        onClick = onClick,
+        shape = RoundedCornerShape(
+            topStart = 0.dp,
+            bottomStart = 0.dp,
+            topEnd = 8.dp,
+            bottomEnd = 8.dp
+        )
+    ) {
+        Box(Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_info_outline_24),
+                    contentDescription = "Info",
+                    tint = appInfoColor
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    "Info: $message",
+                    style = h2.copy(fontSize = 16.sp),
+                    color = appOnInfoColor
+                )
+            }
+        }
+    }
+
+}
 @Preview(showSystemUi = true)
 @Composable
 private fun ErrorTicketViewPrev() {
@@ -95,6 +128,10 @@ private fun ErrorTicketViewPrev() {
                 visibilty = !visibilty
             }
 
+
+            InfoTicketView(message = "Helloworld") {
+                
+            }
 
         }
     }

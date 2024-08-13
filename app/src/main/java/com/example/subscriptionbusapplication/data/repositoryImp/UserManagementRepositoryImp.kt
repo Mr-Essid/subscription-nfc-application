@@ -5,6 +5,7 @@ import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
 import com.example.subscriptionbusapplication.data.models.ErrorModel422
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
+import com.example.subscriptionbusapplication.data.models.Status
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
@@ -373,4 +374,63 @@ class UserManagementRepositoryImp @Inject constructor(
 
     }
 
+    override fun disconnect(token: String): Flow<AppResponse<Status?>> = flow {
+        emit(AppResponse.Loading(isLoading = true, data = null))
+        val tokenCorrect = "Bearer $token"
+        try {
+            val response = subscriptionAPI.disconnect(tokenCorrect)
+            when (response.code()) {
+
+                200 -> {
+                    emit(AppResponse.Success(data = response.body()))
+                }
+
+                else -> {
+
+                    emit(
+                        AppResponse.Error(
+                            code = response.code(),
+                            message = response.message() ?: "unexpected error just done"
+                        )
+                    )
+                }
+            }
+        } catch (e: IOException) {
+            emit(AppResponse.Error(message = e.localizedMessage, code = -1))
+        } catch (e: HttpException) {
+            emit(AppResponse.Error(message = e.localizedMessage, code = -2))
+        }
+    }
+
+    override fun changePassword(token: String, oldPassword: String, newPassword: String): Flow<AppResponse<Status?>> = flow {
+        emit(AppResponse.Loading(isLoading = true, data = null))
+        val tokenCorrect = "Bearer $token"
+        try {
+            val response = subscriptionAPI.changePassword(tokenCorrect, newPassword = newPassword, oldPassword = oldPassword)
+            when (response.code()) {
+
+                403 -> {
+                    // password not correct
+                    emit(AppResponse.Error(message = "incorrect password", code = 403))
+                }
+                200 -> {
+                    // password update | password not changed at all
+                    emit(AppResponse.Success(data = response.body()))
+                }
+                else -> {
+                    // unexpected error
+                    emit(
+                        AppResponse.Error(
+                            code = response.code(),
+                            message = response.message() ?: "unexpected error just done"
+                        )
+                    )
+                }
+            }
+        } catch (e: IOException) {
+            emit(AppResponse.Error(message = e.localizedMessage, code = -1))
+        } catch (e: HttpException) {
+            emit(AppResponse.Error(message = e.localizedMessage, code = -2))
+        }
+    }
 }

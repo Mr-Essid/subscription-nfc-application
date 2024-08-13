@@ -24,5 +24,9 @@ class ProfileViewModel @AssistedInject constructor(
     }
 
     fun disconnect() {
+        sessionManagement.clearToken()
+        userManagement.disconnect(sessionManagement.getToken())
     }
+
+
 }

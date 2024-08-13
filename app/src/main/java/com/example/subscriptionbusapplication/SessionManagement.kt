@@ -33,4 +33,9 @@ class SessionManagement @Inject constructor(
     }
 
 
+    fun clearToken(): Boolean {
+        return sharedPreferences.edit().remove(TOKEN_NAME).commit()
+    }
+
+
 }

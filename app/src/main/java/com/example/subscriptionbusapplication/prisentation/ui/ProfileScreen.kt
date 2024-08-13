@@ -1,6 +1,5 @@
 package com.example.subscriptionbusapplication.prisentation.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +19,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,13 +29,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import com.example.subscriptionbusapplication.Constants
 import com.example.subscriptionbusapplication.R
+import com.example.subscriptionbusapplication.prisentation.static_component.ErrorTicketView
 import com.example.subscriptionbusapplication.prisentation.static_component.ProfileField
 import com.example.subscriptionbusapplication.prisentation.ui.states.ClientState
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceColor
 import com.example.subscriptionbusapplication.prisentation.ui.theme.h2
+import com.example.subscriptionbusapplication.prisentation.ui.theme.h3
 import com.example.subscriptionbusapplication.prisentation.viewmodel.ProfileViewModel
 
 @Composable
@@ -45,6 +48,9 @@ fun ProfileScreen(
 ) {
 
     val clientRelatedData = profileViewModel.clientState
+
+
+
 
     Scaffold { paddingValues ->
         Box(
@@ -77,9 +83,6 @@ fun ProfileScreen(
                         contentAlignment = Alignment.Center
                     ) {
 
-                        SideEffect {
-                            println("${Constants.BASE_URL}/${clientRelatedData.imagePath} ok ok")
-                        }
                         AsyncImage(
                             model = "${Constants.BASE_URL}${clientRelatedData.imagePath}",
                             contentDescription = "image pic",
@@ -138,17 +141,27 @@ fun ProfileScreen(
                         Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
-                        TextButton(onClick = { /*TODO*/ }) {
-                            Text(text = "change password")
+                        TextButton(onClick = {
+                            navController.navigate(ChangePassword)
+                        }) {
+                            Text(text = "change password", style = h3)
                         }
                     }
                 }
 
                 Column {
                     OutlinedButton(onClick = {
-
+                        profileViewModel.disconnect()
+                        navController.navigate(Login) {
+                            popUpTo(0)
+                        }
                     }) {
-                        Text("disconnect", Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                        Text(
+                            "disconnect",
+                            Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = h3
+                        )
                     }
                     OutlinedButton(onClick = { navController.popBackStack(Dashboard(), false) }) {
                         Row(
@@ -161,12 +174,14 @@ fun ProfileScreen(
                                 contentDescription = "return back"
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("back")
+                            Text("back", style = h3)
 
                         }
                     }
                 }
             }
+
+
         }
     }
 }

@@ -4,6 +4,7 @@ import com.example.subscriptionbusapplication.AppResponse
 import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
+import com.example.subscriptionbusapplication.data.models.Status
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
@@ -59,4 +60,14 @@ interface UserManagement {
         token: String,
         subscriptionXId: Int
     ): Flow<AppResponse<SubscriptionX?>>
+
+    fun disconnect(
+        token: String,
+    ): Flow<AppResponse<Status?>>
+
+    fun changePassword(
+        token: String,
+        oldPassword: String,
+        newPassword: String
+    ): Flow<AppResponse<Status?>>
 }

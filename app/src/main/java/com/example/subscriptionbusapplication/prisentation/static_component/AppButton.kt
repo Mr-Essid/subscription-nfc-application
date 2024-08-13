@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appPrimaryColor
+import com.example.subscriptionbusapplication.prisentation.ui.theme.h3
 
 
 @Composable
@@ -32,7 +33,7 @@ fun PrimaryButton(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp)
     ) {
-        Text(text = text)
+        Text(text = text, style = h3)
     }
 }
 
@@ -54,7 +55,7 @@ fun SecondaryButton(
         border = BorderStroke(1.dp, appPrimaryColor),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Text(text = text)
+        Text(text = text, style = h3)
     }
 
 }

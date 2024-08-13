@@ -2,6 +2,7 @@ package com.example.subscriptionbusapplication.data.remote
 
 import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
+import com.example.subscriptionbusapplication.data.models.Status
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
@@ -9,10 +10,13 @@ import com.example.subscriptionbusapplication.data.models.SubscriptionX
 import com.example.subscriptionbusapplication.data.models.User
 import okhttp3.MultipartBody
 import retrofit2.Response
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Multipart
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
@@ -75,5 +79,22 @@ interface SubscriptionAPI {
         @Header("Authorization") token: String,
         @Path("subscriptionx_id") subscriptionId: Int
     ): Response<SubscriptionX?>
+
+    @Headers("Accept: application/json")
+    @GET("/api/current-client/disconnect")
+    suspend fun disconnect(
+        @Header("Authorization") token: String,
+    ): Response<Status>
+
+
+    @FormUrlEncoded
+    @Headers("Accept: application/json")
+    @PATCH("/api/current-client/change-password")
+    suspend fun changePassword(
+        @Header("Authorization") token: String,
+        @Field("newPassword") newPassword: String,
+        @Field("oldPassword") oldPassword: String
+    ): Response<Status>
+
 
 }
