@@ -142,29 +142,6 @@ fun SignUpSecondScreen(
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
-                PrimaryButton(text = "sign up", modifier = Modifier.fillMaxWidth()) {
-                    currentFocus.clearFocus()
-                    if (viewModel.validateData()) {
-                        dataFlowRapper?.addSecondStep(viewModel.email, viewModel.password)
-                        if (dataFlowRapper!!.isDataCollected()) {
-
-                        } else {
-                            navController.navigate(
-                                SignUpLastStep(
-                                    firstname = dataFlowRapper.firstname!!,
-                                    lastname = dataFlowRapper.lastname!!,
-                                    phoneNumber = dataFlowRapper.phoneNumber!!,
-                                    middleName = dataFlowRapper.middleName,
-                                    email = dataFlowRapper.email!!,
-                                    password = dataFlowRapper.password!!
-                                )
-                            )
-                        }
-
-                    }
-
-
-                }
                 Spacer(modifier = Modifier.height(0.dp))
                 SecondaryButton(text = "cancel", modifier = Modifier.fillMaxWidth()) {
                 }

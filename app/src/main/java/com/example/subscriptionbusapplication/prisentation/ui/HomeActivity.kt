@@ -24,8 +24,10 @@ import androidx.navigation.toRoute
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscribeReturnModel
 import com.example.subscriptionbusapplication.helpers.CustomNavTypes
+import com.example.subscriptionbusapplication.prisentation.ui.states.ClientState
 import com.example.subscriptionbusapplication.prisentation.ui.theme.SubscriptionBusApplicationTheme
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceColor
+import com.example.subscriptionbusapplication.prisentation.viewmodel.ProfileViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.SubscriptionDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
@@ -116,6 +118,18 @@ class HomeActivity : ComponentActivity() {
 
                     }
 
+                    composable<ClientStateNav> {
+                        val argument = it.toRoute<ClientStateNav>()
+                        ProfileScreen(
+                            profileViewModel = hiltViewModel<ProfileViewModel, ProfileViewModel.Factory> { factory ->
+                                factory.create(
+                                    argument.toClientState()
+                                )
+                            }, navController
+                        )
+
+                    }
+
                 }
 
             }
@@ -152,15 +166,50 @@ data class SignUpSecondStep(
 )
 
 @Serializable
-data class SignUpLastStep(
-    val firstname: String,
-    val lastname: String,
-    val phoneNumber: String,
+data class ClientStateNav(
+    val firstName: String,
+    val lastName: String,
     val email: String,
-    val password: String,
-    val middleName: String?
-)
+    val imagePath: String,
+    val wallet: String,
+    val deviceName: String,
+    val appId: String,
+    val phoneNumber: String
+) {
+    companion object {
 
+    }
+}
+
+
+fun ClientStateNav.Companion.fromClientState(clientState: ClientState): ClientStateNav {
+    return ClientStateNav(
+        firstName = clientState.firstName,
+        lastName = clientState.lastName,
+        email = clientState.email,
+        imagePath = clientState.imagePath,
+        wallet = clientState.wallet.toString(),
+        deviceName = clientState.deviceName,
+        appId = clientState.appId,
+        phoneNumber = clientState.phoneNumber
+
+    )
+}
+
+
+fun ClientStateNav.toClientState(): ClientState {
+    return ClientState(
+        firstName = firstName,
+        lastName = lastName,
+        email = email,
+        imagePath = imagePath,
+        wallet = wallet.toDouble(),
+        deviceName = deviceName,
+        appId = appId,
+        phoneNumber = phoneNumber
+
+    )
+}
 
 @Serializable
 object SignUp

@@ -3,6 +3,7 @@ package com.example.subscriptionbusapplication.prisentation.ui
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -131,7 +132,12 @@ fun DashboardScreen(
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.outline_account_circle_24),
-                            contentDescription = "account info"
+                            contentDescription = "account info",
+                            modifier = Modifier.clickable {
+                                viewModel.clientSate.value?.let { clientState ->
+                                    navController.navigate(ClientStateNav.fromClientState(clientState))
+                                }
+                            }
                         )
                     }
 
