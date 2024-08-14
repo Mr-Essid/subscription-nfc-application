@@ -97,4 +97,12 @@ interface SubscriptionAPI {
     ): Response<Status>
 
 
+    @FormUrlEncoded
+    @Headers("Accept: application/json")
+    @POST("/api/guest-client/forget-password")
+    suspend fun forgetPasswordRequest(
+        @Field("email") email: String
+    ): Response<Status>
+
+
 }

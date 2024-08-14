@@ -123,7 +123,11 @@ fun LoginScreen(
                         Text(
                             text = "forget password",
                             style = title.copy(fontSize = 14.sp),
-                            modifier = Modifier.clickable { },
+                            modifier = Modifier.clickable {
+                                navController.navigate(
+                                    ForgetPasswordRequest
+                                )
+                            },
                             textAlign = TextAlign.End
                         )
                     }

@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.subscriptionbusapplication.data.models.Passport
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscribeReturnModel
 import com.example.subscriptionbusapplication.helpers.CustomNavTypes
@@ -30,6 +31,7 @@ import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceCo
 import com.example.subscriptionbusapplication.prisentation.viewmodel.ChangePasswordViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.ProfileViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.SubscriptionDetailsViewModel
+import com.example.subscriptionbusapplication.prisentation.viewmodel.forgetpasswordflowfiewmodels.ForgetPasswordRequestViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
@@ -136,6 +138,24 @@ class HomeActivity : ComponentActivity() {
                         )
 
                     }
+
+                    composable<ForgetPasswordRequest> {
+                        ForgetPasswordRequestScreen(
+                            navController = navController,
+                            viewModel = hiltViewModel<ForgetPasswordRequestViewModel>()
+                        )
+                    }
+
+                    composable<ForgetPasswordTryCode> {
+                        val email = it.toRoute<ForgetPasswordTryCode>().email
+
+                    }
+                    composable<ForgetPasswordChangePassword> {
+                        val email = it.toRoute<ForgetPasswordChangePassword>().email
+                        val passport = it.toRoute<ForgetPasswordChangePassword>().passport
+
+
+                    }
                 }
 
             }
@@ -160,6 +180,25 @@ object EmailConfirmation
 class SubscriptionDetails(
     val subscriptionDetailsId: Int,
     val canCurrentClientSubscribe: Boolean
+)
+
+
+// for forget password flow
+// first
+@Serializable
+object ForgetPasswordRequest
+
+// second
+@Serializable
+class ForgetPasswordTryCode(
+    val email: String
+)
+
+// third
+@Serializable
+class ForgetPasswordChangePassword(
+    val email: String,
+    val passport: String
 )
 
 

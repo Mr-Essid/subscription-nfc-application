@@ -50,7 +50,14 @@ fun ProfileScreen(
     val clientRelatedData = profileViewModel.clientState
 
 
+    val disConnectState = profileViewModel.logoutState
 
+    if (disConnectState.value) {
+        navController.navigate(Login) {
+            profileViewModel.clearState()
+            popUpTo(0)
+        }
+    }
 
     Scaffold { paddingValues ->
         Box(
@@ -152,9 +159,6 @@ fun ProfileScreen(
                 Column {
                     OutlinedButton(onClick = {
                         profileViewModel.disconnect()
-                        navController.navigate(Login) {
-                            popUpTo(0)
-                        }
                     }) {
                         Text(
                             "disconnect",

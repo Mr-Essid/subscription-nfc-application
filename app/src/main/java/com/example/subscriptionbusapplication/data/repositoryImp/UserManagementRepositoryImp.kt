@@ -5,6 +5,7 @@ import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
 import com.example.subscriptionbusapplication.data.models.ErrorModel422
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
+import com.example.subscriptionbusapplication.data.models.Passport
 import com.example.subscriptionbusapplication.data.models.Status
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetails
@@ -402,21 +403,31 @@ class UserManagementRepositoryImp @Inject constructor(
         }
     }
 
-    override fun changePassword(token: String, oldPassword: String, newPassword: String): Flow<AppResponse<Status?>> = flow {
+    override fun changePassword(
+        token: String,
+        oldPassword: String,
+        newPassword: String
+    ): Flow<AppResponse<Status?>> = flow {
         emit(AppResponse.Loading(isLoading = true, data = null))
         val tokenCorrect = "Bearer $token"
         try {
-            val response = subscriptionAPI.changePassword(tokenCorrect, newPassword = newPassword, oldPassword = oldPassword)
+            val response = subscriptionAPI.changePassword(
+                tokenCorrect,
+                newPassword = newPassword,
+                oldPassword = oldPassword
+            )
             when (response.code()) {
 
                 403 -> {
                     // password not correct
                     emit(AppResponse.Error(message = "incorrect password", code = 403))
                 }
+
                 200 -> {
                     // password update | password not changed at all
                     emit(AppResponse.Success(data = response.body()))
                 }
+
                 else -> {
                     // unexpected error
                     emit(
@@ -432,5 +443,75 @@ class UserManagementRepositoryImp @Inject constructor(
         } catch (e: HttpException) {
             emit(AppResponse.Error(message = e.localizedMessage, code = -2))
         }
+    }
+
+    override fun sendForgetPasswordRequest(email: String): Flow<AppResponse<Status?>> {
+
+
+        return flow<AppResponse<Status?>> {
+            emit(AppResponse.Loading(isLoading = true, data = null))
+
+
+            try {
+                val response = subscriptionAPI.forgetPasswordRequest(email)
+
+                when (response.code()) {
+                    200 -> {
+                        emit(AppResponse.Success(data = response.body()!!))
+                    }
+
+                    400 -> {
+                        emit(
+                            AppResponse.Error(
+                                message = "email not found, check your email",
+                                code = 400
+                            )
+                        )
+                    }
+
+                    else -> {
+
+                        emit(
+                            AppResponse.Error(
+                                message = response.message() ?: "unexpected error happened",
+                                code = response.code()
+                            )
+                        )
+                    }
+                }
+            } catch (e: IOException) {
+                emit(
+                    AppResponse.Error(
+                        message = e.localizedMessage ?: "connection error",
+                        code = -1
+                    )
+                )
+            } catch (e: HttpException) {
+                emit(
+                    AppResponse.Error(
+                        message = e.localizedMessage ?: "server refuse request",
+                        code = -2
+                    )
+                )
+            }
+        }
+
+    }
+
+    override fun sendForgetPasswordRequestCode(
+        email: String,
+        code: String
+    ): Flow<AppResponse<Passport?>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun sendForgetPasswordRequestResponse(
+        email: String,
+        passport: String,
+        newPassword: String
+    ): Flow<AppResponse<Status?>> {
+
+        TODO("Not yet implemented")
+
     }
 }

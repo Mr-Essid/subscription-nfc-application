@@ -4,6 +4,7 @@ import com.example.subscriptionbusapplication.AppResponse
 import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
 import com.example.subscriptionbusapplication.data.models.ImageResolverModel
+import com.example.subscriptionbusapplication.data.models.Passport
 import com.example.subscriptionbusapplication.data.models.Status
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetails
@@ -68,6 +69,14 @@ interface UserManagement {
     fun changePassword(
         token: String,
         oldPassword: String,
+        newPassword: String
+    ): Flow<AppResponse<Status?>>
+
+    fun sendForgetPasswordRequest(email: String): Flow<AppResponse<Status?>>
+    fun sendForgetPasswordRequestCode(email: String, code: String): Flow<AppResponse<Passport?>>
+    fun sendForgetPasswordRequestResponse(
+        email: String,
+        passport: String,
         newPassword: String
     ): Flow<AppResponse<Status?>>
 }

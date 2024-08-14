@@ -25,6 +25,9 @@
       <SelectionState runConfigName="SubscriptionDetailsPrev">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="ForgetPasswordRequestScreenPrev">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>
