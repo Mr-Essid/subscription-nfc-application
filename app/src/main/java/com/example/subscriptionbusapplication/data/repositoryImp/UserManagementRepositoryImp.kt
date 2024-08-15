@@ -498,20 +498,133 @@ class UserManagementRepositoryImp @Inject constructor(
 
     }
 
-    override fun sendForgetPasswordRequestCode(
-        email: String,
-        code: String
-    ): Flow<AppResponse<Passport?>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun sendForgetPasswordRequestResponse(
+    override fun sendForgetPasswordChange(
         email: String,
         passport: String,
         newPassword: String
     ): Flow<AppResponse<Status?>> {
 
-        TODO("Not yet implemented")
+
+        return flow {
+            emit(AppResponse.Loading(isLoading = true, data = null))
+
+
+            try {
+                val response = subscriptionAPI.forgetPasswordChange(passport, email, newPassword)
+
+                when (response.code()) {
+                    200 -> {
+                        emit(AppResponse.Success(data = response.body()))
+                    }
+
+                    422 -> {
+                        emit(
+                            AppResponse.Error(
+                                message = "password is too easy to guess",
+                                code = 422
+                            )
+                        )
+                    }
+
+                    401 -> {
+                        emit(
+                            AppResponse.Error(
+                                message = "passport expired redo the process",
+                                code = 400
+                            )
+                        )
+                    }
+
+                    else -> {
+
+                        emit(
+                            AppResponse.Error(
+                                message = response.message() ?: "unexpected error happened",
+                                code = response.code()
+                            )
+                        )
+                    }
+                }
+            } catch (e: IOException) {
+                emit(
+                    AppResponse.Error(
+                        message = e.localizedMessage ?: "connection error",
+                        code = -1
+                    )
+                )
+            } catch (e: HttpException) {
+                emit(
+                    AppResponse.Error(
+                        message = e.localizedMessage ?: "server refuse request",
+                        code = -2
+                    )
+                )
+            }
+        }
+    }
+
+    override fun sendForgetPasswordRequestCode(
+        email: String,
+        code: String
+    ): Flow<AppResponse<Passport?>> {
+
+
+        return flow {
+            emit(AppResponse.Loading(isLoading = true, data = null))
+
+
+            try {
+                val response = subscriptionAPI.forgetPasswordTryCode(code = code, email = email)
+
+                when (response.code()) {
+                    200 -> {
+                        emit(AppResponse.Success(data = response.body()!!))
+                    }
+
+                    401 -> {
+                        emit(
+                            AppResponse.Error(
+                                message = "code expired",
+                                code = 400
+                            )
+                        )
+                    }
+
+                    403 -> {
+                        emit(
+                            AppResponse.Error(
+                                message = "code not correct",
+                                code = 400
+                            )
+                        )
+                    }
+
+                    else -> {
+
+                        emit(
+                            AppResponse.Error(
+                                message = response.message() ?: "unexpected error happened",
+                                code = response.code()
+                            )
+                        )
+                    }
+                }
+            } catch (e: IOException) {
+                emit(
+                    AppResponse.Error(
+                        message = e.localizedMessage ?: "connection error",
+                        code = -1
+                    )
+                )
+            } catch (e: HttpException) {
+                emit(
+                    AppResponse.Error(
+                        message = e.localizedMessage ?: "server refuse request",
+                        code = -2
+                    )
+                )
+            }
+        }
 
     }
 }

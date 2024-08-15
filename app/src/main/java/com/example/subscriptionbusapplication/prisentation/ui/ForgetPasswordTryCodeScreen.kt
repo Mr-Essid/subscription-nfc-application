@@ -1,5 +1,7 @@
 package com.example.subscriptionbusapplication.prisentation.ui
 
+import android.view.View
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,20 +49,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.subscriptionbusapplication.R
 import com.example.subscriptionbusapplication.R.*
+import com.example.subscriptionbusapplication.prisentation.static_component.ErrorTicketView
+import com.example.subscriptionbusapplication.prisentation.static_component.InfoTicketView
 import com.example.subscriptionbusapplication.prisentation.static_component.PrimaryButton
 import com.example.subscriptionbusapplication.prisentation.static_component.SecondaryButton
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appPrimaryColor
 import com.example.subscriptionbusapplication.prisentation.ui.theme.h1
 import com.example.subscriptionbusapplication.prisentation.ui.theme.h2
 import com.example.subscriptionbusapplication.prisentation.ui.theme.h3
+import com.example.subscriptionbusapplication.prisentation.viewmodel.forgetpasswordflowfiewmodels.ForgetPasswordTryCodeViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun ForgetPasswordTryCodeScreen(
-
-    email: String
+    tryCodeViewModel: ForgetPasswordTryCodeViewModel,
+    email: String,
+    navController: NavController
 ) {
 
     var isEnable by rememberSaveable {
@@ -85,6 +93,10 @@ fun ForgetPasswordTryCodeScreen(
         timer = 0
     }
 
+
+    val tryCodeState = tryCodeViewModel.tryCodeState
+    val resendEmailMessage = tryCodeViewModel.resendEmailState
+
     Scaffold(
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
@@ -104,18 +116,15 @@ fun ForgetPasswordTryCodeScreen(
 
                 Spacer(modifier = Modifier.height(64.dp))
 
-                var myTextFieldValue by remember {
-                    mutableStateOf("124")
-                }
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     BasicTextField(
-                        value = myTextFieldValue,
+                        value = tryCodeViewModel.codeValue,
                         onValueChange = {
                             if (it.length <= 4)
-                                myTextFieldValue = it
+                                tryCodeViewModel.codeValue = it
                         },
                         textStyle = TextStyle(color = Color.Transparent, fontSize = 0.sp),
                         cursorBrush = SolidColor(Color.Black),
@@ -135,14 +144,15 @@ fun ForgetPasswordTryCodeScreen(
                                             ),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        if (myTextFieldValue.length > index)
+                                        if (tryCodeViewModel.codeValue.length > index)
                                             Text(
-                                                text = myTextFieldValue.getOrNull(index).toString(),
+                                                text = tryCodeViewModel.codeValue.getOrNull(index)
+                                                    .toString(),
                                                 style = h1,
                                                 color = appPrimaryColor.copy(alpha = 0.7f)
                                             )
                                         else {
-                                            if (myTextFieldValue.length == index) {
+                                            if (tryCodeViewModel.codeValue.length == index) {
                                                 Box(
                                                     modifier = Modifier
                                                         .clip(RoundedCornerShape(9.dp))
@@ -173,6 +183,7 @@ fun ForgetPasswordTryCodeScreen(
                     Button(
                         onClick = {
                             isEnable = false
+                            tryCodeViewModel.resendEmail(email)
                         },
                         enabled = isEnable,
                         colors = ButtonDefaults.buttonColors(
@@ -200,11 +211,14 @@ fun ForgetPasswordTryCodeScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     PrimaryButton(text = "submit", modifier = Modifier.width(120.dp)) {
+                        tryCodeViewModel.tryCode(email)
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
                     SecondaryButton(text = "cancel", modifier = Modifier.width(120.dp)) {
-
+                        navController.popBackStack()
+                        tryCodeViewModel.clearStateTryCode()
+                        tryCodeViewModel.clearStateResend()
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -216,8 +230,46 @@ fun ForgetPasswordTryCodeScreen(
                     append("Note: ")
                     pushStyle(SpanStyle(fontWeight = FontWeight.Normal, color = Color.Black))
                     append("code has been sent to your email, check your email")
-                })
+                }, style = h3)
             }
+
+            AnimatedVisibility(visible = tryCodeState.value.data != null) {
+                tryCodeState.value.data?.let {
+                    InfoTicketView(message = "done") {
+                        tryCodeViewModel.clearStateTryCode()
+                    }
+                }
+            }
+
+
+
+            tryCodeState.value.data?.let {
+                navController.popBackStack()
+                navController.navigate(ForgetPasswordChangePassword(email, it.passport))
+                tryCodeViewModel.clearStateTryCode()
+                tryCodeViewModel.clearStateResend()
+            }
+
+            AnimatedVisibility(visible = resendEmailMessage.value.errorMessage != null) {
+                resendEmailMessage.value.errorMessage?.let {
+                    ErrorTicketView(message = it) {
+                        tryCodeViewModel.clearStateTryCode()
+                    }
+                }
+            }
+
+            AnimatedVisibility(visible = tryCodeState.value.errorMessage != null) {
+                tryCodeState.value.errorMessage?.let {
+                    ErrorTicketView(message = it) {
+                        tryCodeViewModel.clearStateTryCode()
+                    }
+                }
+            }
+            if (tryCodeState.value.isLoading || resendEmailMessage.value.isLoading) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
+
+
         }
     }
 }
@@ -227,7 +279,5 @@ fun ForgetPasswordTryCodeScreen(
 @Composable
 private fun ForgetPasswordTryCodeScreenPrev() {
 
-
-    ForgetPasswordTryCodeScreen()
 
 }

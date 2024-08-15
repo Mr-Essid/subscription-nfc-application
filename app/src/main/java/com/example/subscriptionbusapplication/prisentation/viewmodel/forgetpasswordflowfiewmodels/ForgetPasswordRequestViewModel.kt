@@ -8,8 +8,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.subscriptionbusapplication.AppResponse
+import com.example.subscriptionbusapplication.data.models.Status
 import com.example.subscriptionbusapplication.data.repository.UserManagement
-import com.example.subscriptionbusapplication.prisentation.ui.states.forgetpasswordflowstate.ForgetPasswordRequestState
+import com.example.subscriptionbusapplication.prisentation.ui.states.ResponseSate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -21,8 +22,8 @@ class ForgetPasswordRequestViewModel @Inject constructor(
 ) : ViewModel() {
 
     var emailValue by mutableStateOf("")
-    private val _emailRequestState = mutableStateOf(ForgetPasswordRequestState())
-    val emailRequestState: State<ForgetPasswordRequestState> = _emailRequestState
+    private val _emailRequestState = mutableStateOf(ResponseSate<Status?>())
+    val emailRequestState: State<ResponseSate<Status?>> = _emailRequestState
     private val _mapError = mutableStateMapOf<String, String>()
     val mapError: Map<String, String> = _mapError
 
@@ -41,15 +42,15 @@ class ForgetPasswordRequestViewModel @Inject constructor(
         userManagement.sendForgetPasswordRequest(emailValue).onEach { appResponse ->
             when (appResponse) {
                 is AppResponse.Success -> {
-                    _emailRequestState.value = ForgetPasswordRequestState(data = appResponse.data)
+                    _emailRequestState.value = ResponseSate(data = appResponse.data)
                 }
 
                 is AppResponse.Loading -> {
-                    _emailRequestState.value = ForgetPasswordRequestState(isLoading = true)
+                    _emailRequestState.value = ResponseSate(isLoading = true)
                 }
 
                 is AppResponse.Error -> {
-                    _emailRequestState.value = ForgetPasswordRequestState(
+                    _emailRequestState.value = ResponseSate(
                         errorMessage = appResponse.message ?: "unexpected error just done"
                     )
                 }
@@ -60,7 +61,7 @@ class ForgetPasswordRequestViewModel @Inject constructor(
 
 
     fun clearState() {
-        _emailRequestState.value = ForgetPasswordRequestState()
+        _emailRequestState.value = ResponseSate()
     }
 
 }

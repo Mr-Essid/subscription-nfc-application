@@ -74,7 +74,7 @@ interface UserManagement {
 
     fun sendForgetPasswordRequest(email: String): Flow<AppResponse<Status?>>
     fun sendForgetPasswordRequestCode(email: String, code: String): Flow<AppResponse<Passport?>>
-    fun sendForgetPasswordRequestResponse(
+    fun sendForgetPasswordChange(
         email: String,
         passport: String,
         newPassword: String

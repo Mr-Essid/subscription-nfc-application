@@ -160,11 +160,11 @@ fun ForgetPasswordRequestScreen(
             }
 
             requestState.value.data?.let {
+                viewModel.clearState()
                 // it mean that the request done
+                navController.popBackStack()
 
-                InfoTicketView(message = "code has been sent through your email") {
-                    viewModel.clearState()
-                }
+                navController.navigate(ForgetPasswordTryCode(email = viewModel.emailValue))
 
             }
 

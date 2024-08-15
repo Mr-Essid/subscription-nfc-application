@@ -55,6 +55,12 @@ fun LoginScreen(
     appId: String
 ) {
 
+
+    println(
+        "here is our status ${
+            navController.currentBackStackEntry?.savedStateHandle?.get<String>("status")
+        }"
+    )
     val loginStatus = viewModel.loginStatus
     val mapError = viewModel.errorMap
     val localFocusManager = LocalFocusManager.current

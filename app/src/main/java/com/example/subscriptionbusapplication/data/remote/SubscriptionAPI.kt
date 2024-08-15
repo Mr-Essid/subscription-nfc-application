@@ -2,6 +2,7 @@ package com.example.subscriptionbusapplication.data.remote
 
 import com.example.subscriptionbusapplication.data.models.AccessTokenModel
 import com.example.subscriptionbusapplication.data.models.ClientModel
+import com.example.subscriptionbusapplication.data.models.Passport
 import com.example.subscriptionbusapplication.data.models.Status
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscriptionAllDetails
@@ -104,5 +105,22 @@ interface SubscriptionAPI {
         @Field("email") email: String
     ): Response<Status>
 
+
+    @FormUrlEncoded
+    @Headers("Accept: application/json")
+    @POST("/api/guest-client/trycode-password")
+    suspend fun forgetPasswordTryCode(
+        @Field("code") code: String,
+        @Field("email") email: String
+    ): Response<Passport?>
+
+    @FormUrlEncoded
+    @Headers("Accept: application/json")
+    @POST("/api/guest-client/change-password")
+    suspend fun forgetPasswordChange(
+        @Field("passport") passport: String,
+        @Field("email") email: String,
+        @Field("newPassword") password: String
+    ): Response<Status?>
 
 }

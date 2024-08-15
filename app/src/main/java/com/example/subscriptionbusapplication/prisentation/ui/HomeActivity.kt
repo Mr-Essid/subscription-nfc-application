@@ -31,7 +31,9 @@ import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceCo
 import com.example.subscriptionbusapplication.prisentation.viewmodel.ChangePasswordViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.ProfileViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.SubscriptionDetailsViewModel
+import com.example.subscriptionbusapplication.prisentation.viewmodel.forgetpasswordflowfiewmodels.ForgetPasswordChangeViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.forgetpasswordflowfiewmodels.ForgetPasswordRequestViewModel
+import com.example.subscriptionbusapplication.prisentation.viewmodel.forgetpasswordflowfiewmodels.ForgetPasswordTryCodeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
@@ -148,11 +150,23 @@ class HomeActivity : ComponentActivity() {
 
                     composable<ForgetPasswordTryCode> {
                         val email = it.toRoute<ForgetPasswordTryCode>().email
-
+                        ForgetPasswordTryCodeScreen(
+                            tryCodeViewModel = hiltViewModel<ForgetPasswordTryCodeViewModel>(),
+                            email = email,
+                            navController = navController
+                        )
                     }
                     composable<ForgetPasswordChangePassword> {
                         val email = it.toRoute<ForgetPasswordChangePassword>().email
                         val passport = it.toRoute<ForgetPasswordChangePassword>().passport
+
+
+                        ForgetPasswordChangeScreen(
+                            viewModel = hiltViewModel<ForgetPasswordChangeViewModel>(),
+                            navController = navController,
+                            email = email,
+                            passport = passport
+                        )
 
 
                     }
