@@ -1,5 +1,6 @@
 package com.example.subscriptionbusapplication.prisentation.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +38,7 @@ import coil.compose.AsyncImage
 import com.example.subscriptionbusapplication.Constants
 import com.example.subscriptionbusapplication.R
 import com.example.subscriptionbusapplication.prisentation.static_component.ErrorTicketView
+import com.example.subscriptionbusapplication.prisentation.static_component.InfoTicketView
 import com.example.subscriptionbusapplication.prisentation.static_component.ProfileField
 import com.example.subscriptionbusapplication.prisentation.ui.states.ClientState
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceColor
@@ -52,6 +57,17 @@ fun ProfileScreen(
 
     val disConnectState = profileViewModel.logoutState
 
+
+    var prevStatus by remember {
+        mutableStateOf<String?>(null)
+    }
+
+
+    navController.currentBackStackEntry?.savedStateHandle?.get<String>("status")?.let {
+        navController.currentBackStackEntry?.savedStateHandle?.remove<String>("status")
+        prevStatus = it
+    }
+
     if (disConnectState.value) {
         navController.navigate(Login) {
             profileViewModel.clearState()
@@ -64,11 +80,11 @@ fun ProfileScreen(
             modifier = Modifier
                 .background(appSurfaceColor)
                 .padding(paddingValues)
-                .padding(horizontal = 8.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(horizontal = 8.dp)
                     .padding(bottom = 24.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
@@ -186,6 +202,13 @@ fun ProfileScreen(
             }
 
 
+            prevStatus?.let {
+                AnimatedVisibility(visible = true) {
+                    InfoTicketView(message = it) {
+                        prevStatus = null
+                    }
+                }
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.subscriptionbusapplication.prisentation.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -21,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.subscriptionbusapplication.SessionManagement
 import com.example.subscriptionbusapplication.data.models.Passport
 import com.example.subscriptionbusapplication.data.models.SubscribeResult
 import com.example.subscriptionbusapplication.data.models.SubscribeReturnModel
@@ -47,19 +49,17 @@ class HomeActivity : ComponentActivity() {
 
         val deviceId = Settings.Secure.getString(contentResolver, ANDROID_ID)
         val appId = Settings.Global.getString(contentResolver, Settings.Global.DEVICE_NAME)
+        val token_ =
+            this.getSharedPreferences("SESSION", Context.MODE_PRIVATE).getString("TOKEN_NAME", "")
         setContent {
             val navController = rememberNavController()
-            val collectedData = DataFlowRapper(
-                appId = deviceId,
-                deviceName = appId
-            )
 
             SubscriptionBusApplicationTheme(
                 darkTheme = false
             ) {
                 NavHost(
                     navController = navController,
-                    startDestination = Login,
+                    startDestination = if (token_.isNullOrBlank()) Login else Dashboard(),
                     modifier = Modifier
                         .background(
                             appSurfaceColor

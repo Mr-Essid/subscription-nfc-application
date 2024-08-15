@@ -109,6 +109,7 @@ fun DashboardScreen(
         }
     }
 
+
     val clientState = viewModel.clientSate
     val clientListSubscription = viewModel.currentListOfSubscriptions
 

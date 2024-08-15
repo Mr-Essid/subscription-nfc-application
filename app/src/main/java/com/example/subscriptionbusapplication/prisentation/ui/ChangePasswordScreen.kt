@@ -120,9 +120,12 @@ fun ChangePasswordScreen(
         }
 
         changePasswordState.value.data?.let {
-            changePasswordViewModel.clearInput()
-            showTicketsMessage = it.status
             changePasswordViewModel.clearState()
+            navController.previousBackStackEntry?.savedStateHandle?.set(
+                "status",
+                "password changed successfully"
+            )
+            navController.popBackStack()
         }
 
 

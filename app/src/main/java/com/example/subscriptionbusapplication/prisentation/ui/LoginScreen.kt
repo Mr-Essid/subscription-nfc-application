@@ -22,6 +22,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layoutId
@@ -37,6 +41,7 @@ import com.example.subscriptionbusapplication.R
 import com.example.subscriptionbusapplication.prisentation.static_component.AppOutlinedEditText
 import com.example.subscriptionbusapplication.prisentation.static_component.AppOutlinedPassword
 import com.example.subscriptionbusapplication.prisentation.static_component.ErrorTicketView
+import com.example.subscriptionbusapplication.prisentation.static_component.InfoTicketView
 import com.example.subscriptionbusapplication.prisentation.static_component.PrimaryButton
 import com.example.subscriptionbusapplication.prisentation.static_component.SecondaryButton
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appPrimaryColor
@@ -56,14 +61,13 @@ fun LoginScreen(
 ) {
 
 
-    println(
-        "here is our status ${
-            navController.currentBackStackEntry?.savedStateHandle?.get<String>("status")
-        }"
-    )
     val loginStatus = viewModel.loginStatus
     val mapError = viewModel.errorMap
     val localFocusManager = LocalFocusManager.current
+
+    var prevStatus by remember {
+        mutableStateOf<String?>(null)
+    }
 
     if (loginStatus.value.isSuccess) {
 
@@ -168,6 +172,20 @@ fun LoginScreen(
 
 
             }
+
+
+            navController.currentBackStackEntry?.savedStateHandle?.get<String>("status").let {
+                navController.currentBackStackEntry?.savedStateHandle?.remove<String>("status")
+                prevStatus = it
+            }
+
+
+            prevStatus?.let {
+                InfoTicketView(message = it) {
+                    prevStatus = null
+                }
+            }
+
 
             if (loginStatus.value.isLoading) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
