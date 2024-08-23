@@ -10,6 +10,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOut
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.statusBars
@@ -17,7 +28,9 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.fragment.app.FragmentManager.BackStackEntry
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -32,6 +45,7 @@ import com.example.subscriptionbusapplication.prisentation.ui.theme.Subscription
 import com.example.subscriptionbusapplication.prisentation.ui.theme.appSurfaceColor
 import com.example.subscriptionbusapplication.prisentation.viewmodel.ChangePasswordViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.ProfileViewModel
+import com.example.subscriptionbusapplication.prisentation.viewmodel.SplashScreenViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.SubscriptionDetailsViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.forgetpasswordflowfiewmodels.ForgetPasswordChangeViewModel
 import com.example.subscriptionbusapplication.prisentation.viewmodel.forgetpasswordflowfiewmodels.ForgetPasswordRequestViewModel
@@ -49,8 +63,6 @@ class HomeActivity : ComponentActivity() {
 
         val deviceId = Settings.Secure.getString(contentResolver, ANDROID_ID)
         val appId = Settings.Global.getString(contentResolver, Settings.Global.DEVICE_NAME)
-        val token_ =
-            this.getSharedPreferences("SESSION", Context.MODE_PRIVATE).getString("TOKEN_NAME", "")
         setContent {
             val navController = rememberNavController()
 
@@ -59,21 +71,56 @@ class HomeActivity : ComponentActivity() {
             ) {
                 NavHost(
                     navController = navController,
-                    startDestination = if (token_.isNullOrBlank()) Login else Dashboard(),
+                    startDestination = SplashScreenRoute,
                     modifier = Modifier
                         .background(
                             appSurfaceColor
                         )
-                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .windowInsetsPadding(WindowInsets.statusBars),
                 ) {
-                    composable<Login> {
+
+                    composable<SplashScreenRoute>(
+                        enterTransition = {
+                            fadeIn(
+                                animationSpec = tween(easing = LinearEasing)
+                            )
+                        },
+                        exitTransition = {
+                            fadeOut(
+                                animationSpec = tween(easing = LinearEasing)
+                            )
+                        }
+                    ) {
+                        SplashScreenApp(
+                            navController = navController,
+                            splashScreenViewModel = hiltViewModel<SplashScreenViewModel>()
+                        )
+                    }
+                    composable<Login>(
+                        enterTransition = { fadeIn(animationSpec = tween(easing = LinearEasing)) },
+                        exitTransition = {
+                            fadeOut(
+                                animationSpec = tween(easing = LinearEasing)
+                            )
+                        }
+                    ) {
                         LoginScreen(
                             navController = navController,
                             deviceName = appId,
                             appId = deviceId
                         )
                     }
-                    composable<SignUp> {
+                    composable<SignUp>(
+
+                        enterTransition = {
+                            fadeIn(
+                                animationSpec = tween(easing = LinearEasing)
+                            )
+                        },
+                        exitTransition = {
+                            fadeOut(tween(easing = LinearEasing))
+                        }
+                    ) {
                         SignUpScreen(
                             navController = navController,
                             deviceId = appId,
@@ -81,13 +128,29 @@ class HomeActivity : ComponentActivity() {
                         )
                     }
 
-                    composable<EmailConfirmation> {
+                    composable<EmailConfirmation>(
+                        enterTransition = {
+                            fadeIn(
+                                animationSpec = tween(easing = LinearEasing)
+                            )
+                        },
+                        exitTransition = {
+                            fadeOut(tween(easing = LinearEasing))
+                        }
+                    ) {
                         EmailConfirmationScreen(
                             navController = navController
                         )
                     }
 
-                    composable<Dashboard> { backStackEntry ->
+                    composable<Dashboard>(
+                        enterTransition = { fadeIn(animationSpec = tween(easing = LinearEasing)) },
+                        exitTransition = {
+                            fadeOut(
+                                animationSpec = tween(easing = LinearEasing)
+                            )
+                        }
+                    ) { backStackEntry ->
                         val idSubscription =
                             backStackEntry.savedStateHandle.get<Int>("id-subscription")
                         backStackEntry.savedStateHandle.remove<Int>("id-subscription")
@@ -107,7 +170,21 @@ class HomeActivity : ComponentActivity() {
                         )
                     }
 
-                    composable<SubscriptionDetails> {
+                    composable<SubscriptionDetails>(
+                        enterTransition = {
+                            fadeIn(
+                                animationSpec = tween(
+                                    easing = LinearEasing,
+                                    delayMillis = 200
+                                )
+                            )
+                        },
+                        exitTransition = {
+                            fadeOut(
+                                animationSpec = tween(easing = LinearEasing, delayMillis = 200)
+                            )
+                        }
+                    ) {
                         val argument = it.toRoute<SubscriptionDetails>()
                         SubscriptionDetailsScreen(
                             viewModel = hiltViewModel<SubscriptionDetailsViewModel, SubscriptionDetailsViewModel.Factory> { factory ->
@@ -121,7 +198,14 @@ class HomeActivity : ComponentActivity() {
 
                     }
 
-                    composable<ClientStateNav> {
+                    composable<ClientStateNav>(
+                        enterTransition = { fadeIn(animationSpec = tween(easing = LinearEasing)) },
+                        exitTransition = {
+                            fadeOut(
+                                animationSpec = tween(easing = LinearEasing)
+                            )
+                        }
+                    ) {
                         val argument = it.toRoute<ClientStateNav>()
                         ProfileScreen(
                             profileViewModel = hiltViewModel<ProfileViewModel, ProfileViewModel.Factory> { factory ->
@@ -133,7 +217,14 @@ class HomeActivity : ComponentActivity() {
 
                     }
 
-                    composable<ChangePassword> {
+                    composable<ChangePassword>(
+                        enterTransition = { fadeIn(animationSpec = tween(easing = LinearEasing)) },
+                        exitTransition = {
+                            fadeOut(
+                                animationSpec = tween(easing = LinearEasing)
+                            )
+                        }
+                    ) {
                         ChangePasswordScreen(
                             changePasswordViewModel = hiltViewModel<ChangePasswordViewModel>(),
                             navController = navController
@@ -141,14 +232,22 @@ class HomeActivity : ComponentActivity() {
 
                     }
 
-                    composable<ForgetPasswordRequest> {
+                    composable<ForgetPasswordRequest>(
+                        enterTransition = { fadeIn(animationSpec = tween(easing = LinearEasing)) },
+                        exitTransition = {
+                            fadeOut(
+                                animationSpec = tween(easing = LinearEasing)
+                            )
+                        }
+                    ) {
                         ForgetPasswordRequestScreen(
                             navController = navController,
                             viewModel = hiltViewModel<ForgetPasswordRequestViewModel>()
                         )
                     }
 
-                    composable<ForgetPasswordTryCode> {
+                    composable<ForgetPasswordTryCode>(
+                    ) {
                         val email = it.toRoute<ForgetPasswordTryCode>().email
                         ForgetPasswordTryCodeScreen(
                             tryCodeViewModel = hiltViewModel<ForgetPasswordTryCodeViewModel>(),
@@ -170,6 +269,7 @@ class HomeActivity : ComponentActivity() {
 
 
                     }
+
                 }
 
             }
@@ -196,6 +296,8 @@ class SubscriptionDetails(
     val canCurrentClientSubscribe: Boolean
 )
 
+@Serializable
+object SplashScreenRoute
 
 // for forget password flow
 // first

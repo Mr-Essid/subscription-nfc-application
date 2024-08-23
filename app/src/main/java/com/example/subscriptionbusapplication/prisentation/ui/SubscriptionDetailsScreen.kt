@@ -217,6 +217,7 @@ fun SubscriptionDetailsScreen(
                     Text(text = "back", color = appPrimaryColor)
                 }
             }
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 

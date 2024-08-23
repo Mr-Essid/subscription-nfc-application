@@ -36,102 +36,141 @@ import java.time.LocalDate
 
 @Composable
 fun SubscriptionXDetailsView(subscriptionDetailsX: SubscriptionX) {
-   Column(
-       Modifier
-           .fillMaxSize()
-           .background(appSurfaceColor)
-           .padding(horizontal = 16.dp),
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(appSurfaceColor)
+            .padding(horizontal = 16.dp),
 
-       horizontalAlignment = Alignment.CenterHorizontally
-   ) {
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
-       Row(verticalAlignment = Alignment.CenterVertically) {
-           Text(text = "Subscription Details", style = h2, color = appPrimaryColor.copy(alpha = 0.8f))
-       }
-       Spacer(modifier = Modifier.height(16.dp))
-       Row(           Modifier.fillMaxWidth(),
-           verticalAlignment = Alignment.CenterVertically) {
-           Icon(painter = painterResource(id = R.drawable.label), contentDescription = "label icon")
-           Spacer(modifier = Modifier.width(8.dp))
-           Text(text = "Subscription ${subscriptionDetailsX.subscriptionDetails.months} Months", style = h3 )
-       }
-       Spacer(modifier = Modifier.height(8.dp))
-       Row(
-           Modifier.fillMaxWidth(),
-           verticalAlignment = Alignment.CenterVertically
-       ) {
-           Icon(painter = painterResource(id = R.drawable.dinartn), contentDescription = "label icon")
-           Spacer(modifier = Modifier.width(8.dp))
-           Text(text = "Price ${subscriptionDetailsX.subscriptionDetails.price}dt", style = h3 )
-       }
-       Spacer(modifier = Modifier.height(8.dp))
-       Row(
-           Modifier.fillMaxWidth(),
-           verticalAlignment = Alignment.CenterVertically
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Subscription Details",
+                style = h2,
+                color = appPrimaryColor.copy(alpha = 0.8f)
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.label),
+                contentDescription = "label icon"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Subscription ${subscriptionDetailsX.subscriptionDetails.months} Months",
+                style = h3
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.dinartn),
+                contentDescription = "label icon"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Price ${subscriptionDetailsX.subscriptionDetails.price}dt", style = h3)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
 
-       ) {
-           Icon(painter = painterResource(id = R.drawable.placeholder), contentDescription = "label icon")
-           Spacer(modifier = Modifier.width(8.dp))
-           Text(text = "Zone ${subscriptionDetailsX.subscriptionDetails.zoneName}", style = h3 )
-       }
-       Spacer(modifier = Modifier.height(8.dp))
-
-
-       // those the days
-       Row(
-           Modifier.fillMaxWidth(),
-           verticalAlignment = Alignment.CenterVertically
-
-       ) {
-           Icon(painter = painterResource(id = R.drawable.time), contentDescription = "label icon", modifier = Modifier.size(24.dp))
-           Spacer(modifier = Modifier.width(8.dp))
-           Text(text = "Rest ${subscriptionDetailsX.to.toEpochDay() - LocalDate.now().toEpochDay()} day", style = h3 )
-       }
-       Spacer(modifier = Modifier.height(8.dp))
-       Row(
-           Modifier.fillMaxWidth(),
-           verticalAlignment = Alignment.CenterVertically
-
-       ) {
-           Icon(painter = painterResource(id = R.drawable.bus), contentDescription = "label icon", modifier = Modifier.size(24.dp))
-           Spacer(modifier = Modifier.width(8.dp))
-           Text(text = "Lines", style = h3 )
-       }
-       Spacer(modifier = Modifier.height(8.dp))
-       Row(
-           Modifier
-               .fillMaxWidth()
-               .padding(horizontal = 16.dp)) {
-           if (subscriptionDetailsX.subscriptionDetails.lines.isNotEmpty())
-               subscriptionDetailsX.subscriptionDetails.lines.forEach {
-                   LineRepresentation(label = it.label)
-                   Spacer(modifier = Modifier.width(8.dp))
-               }
-           else
-              Text(text = "No Lines Available For Now", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-       }
-       Spacer(modifier = Modifier.height(8.dp))
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.placeholder),
+                contentDescription = "label icon"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Zone ${subscriptionDetailsX.subscriptionDetails.zoneName}", style = h3)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
 
 
-       // those the days
-       Row(
-           Modifier.fillMaxWidth(),
-           verticalAlignment = Alignment.CenterVertically
+        // those the days
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
 
-       ) {
-           Icon(painter = painterResource(id = R.drawable.calendar), contentDescription = "label icon")
-           Spacer(modifier = Modifier.width(8.dp))
-           Text(text = "Days", style = h3 )
-       }
-       Row(
-           Modifier
-               .fillMaxWidth()
-               .padding(horizontal = 4.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-           subscriptionDetailsX.subscriptionDetails.days.forEach {
-               DayRepresentation(label = it.shortName, enabled = it.isAvailableRightNow == 1)
-           }
-       }
-   }
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.time),
+                contentDescription = "label icon",
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Rest ${
+                    subscriptionDetailsX.to.toEpochDay() - LocalDate.now().toEpochDay()
+                } day", style = h3
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.bus),
+                contentDescription = "label icon",
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Lines", style = h3)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            if (subscriptionDetailsX.subscriptionDetails.lines.isNotEmpty())
+                subscriptionDetailsX.subscriptionDetails.lines.forEach {
+                    LineRepresentation(label = it.label)
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+            else
+                Text(
+                    text = "No Lines Available For Now",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+
+        // those the days
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.calendar),
+                contentDescription = "label icon"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Days", style = h3)
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp), horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            subscriptionDetailsX.subscriptionDetails.days.forEach {
+                DayRepresentation(label = it.shortName, enabled = it.isAvailableRightNow == 1)
+            }
+        }
+    }
 }
 
 
@@ -204,7 +243,7 @@ private fun SubscriptionXDetailsViewPrev() {
             frenchShortName = "Dim",
             isAvailableRightNow = 1
         ),
-        )
+    )
 
     val subscriptionX = SubscriptionX(
         from = LocalDate.now(),

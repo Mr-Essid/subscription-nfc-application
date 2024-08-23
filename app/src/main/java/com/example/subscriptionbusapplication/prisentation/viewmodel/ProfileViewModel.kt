@@ -34,6 +34,7 @@ class ProfileViewModel @AssistedInject constructor(
     fun disconnect() {
         userManagement.disconnect(sessionManagement.getToken()).onEach { appResponse ->
             sessionManagement.clearToken()
+            sessionManagement
             _logoutState.value = true
         }.launchIn(viewModelScope)
     }

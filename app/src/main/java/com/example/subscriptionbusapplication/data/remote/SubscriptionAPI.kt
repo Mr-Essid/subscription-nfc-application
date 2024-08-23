@@ -123,4 +123,12 @@ interface SubscriptionAPI {
         @Field("newPassword") password: String
     ): Response<Status?>
 
+
+    @Headers("Accept: application/json")
+    @GET("/api/guest-client/check-token")
+    suspend fun checkTokenValidation(
+        @Header("Authorization") token: String
+    ): Response<Status?>
+
+
 }

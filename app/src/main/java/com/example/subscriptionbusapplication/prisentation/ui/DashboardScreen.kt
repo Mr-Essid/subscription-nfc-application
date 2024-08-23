@@ -1,5 +1,6 @@
 package com.example.subscriptionbusapplication.prisentation.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.slideInHorizontally
@@ -76,6 +77,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
@@ -114,6 +116,8 @@ fun DashboardScreen(
     val clientListSubscription = viewModel.currentListOfSubscriptions
 
 
+
+
     Scaffold {
         Box(
             modifier = Modifier
@@ -142,19 +146,24 @@ fun DashboardScreen(
                             contentDescription = "log of application",
                             Modifier.width(82.dp)
                         )
-                        Icon(
-                            painter = painterResource(id = R.drawable.outline_account_circle_24),
-                            contentDescription = "account info",
-                            modifier = Modifier.clickable {
-                                viewModel.clientSate.value?.let { clientState ->
-                                    navController.navigate(
-                                        ClientStateNav.fromClientState(
-                                            clientState
-                                        )
+
+                        IconButton(onClick = {
+
+                            viewModel.clientSate.value?.let { clientState ->
+                                navController.navigate(
+                                    ClientStateNav.fromClientState(
+                                        clientState
                                     )
-                                }
+                                )
                             }
-                        )
+
+                        }) {
+
+                            Icon(
+                                painter = painterResource(id = R.drawable.outline_account_circle_24),
+                                contentDescription = "account info",
+                            )
+                        }
                     }
 
                 }
@@ -195,7 +204,8 @@ fun DashboardScreen(
                                 AsyncImage(
                                     model = "${Constants.BASE_URL}${currentUser.imagePath}",
                                     contentDescription = "person photo",
-                                    contentScale = ContentScale.Fit,
+                                    contentScale = ContentScale.Crop,
+
                                     colorFilter = ColorFilter.tint(
                                         color = Color.White.copy(alpha = 0.2f),
                                         blendMode = BlendMode.Lighten
@@ -231,9 +241,7 @@ fun DashboardScreen(
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
                                         text = "Wallet: ${
-                                            currentUser.wallet.toString()
-                                                .split(".")[0] + "." + currentUser.wallet.toString()
-                                                .split("0").getOrElse(1) { 0 }.toString().take(1)
+                                            String.format("%.2f", currentUser.wallet)
                                         } dt",
                                         style = h4,
                                         maxLines = 1,
@@ -241,20 +249,19 @@ fun DashboardScreen(
                                     )
                                 }
                             }
-
+                            Spacer(modifier = Modifier.height(16.dp))
                             val transition = animateIntAsState(
                                 targetValue = if (isActiveSessionExpended) clientListSubscription.size else 3,
                                 label = "expend active sessions"
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = "active subscriptions",
                                     style = h3,
                                     color = appPrimaryColor
                                 )
-
+                                Spacer(modifier = Modifier.height(8.dp))
                                 if (clientListSubscription.size > 3)
                                     IconButton(onClick = {
                                         isActiveSessionExpended = !isActiveSessionExpended
@@ -265,7 +272,7 @@ fun DashboardScreen(
                                         )
                                     }
                             }
-
+                            Spacer(modifier = Modifier.height(8.dp))
                             if (clientListSubscription.isEmpty()) {
                                 Box(
                                     modifier = Modifier
@@ -394,6 +401,16 @@ fun DashboardScreen(
                     }
                 }
 
+                if (viewModel.currentClientLoadState.value.isError) {
+                    viewModel.eraseState()
+                    navController.popBackStack()
+
+                    navController.navigate(Login)
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        "status",
+                        "session expired"
+                    )
+                }
 
                 bottomSheetCurrentFocus?.let {
                     ModalBottomSheet(

@@ -116,7 +116,9 @@ private fun SubscriptionDetailsCardPrev() {
         id = 1
     )
 
-
+    SubscriptionDetailsCard(subscriptionDetails = subscriptionDetails) {
+        
+    }
     Column(Modifier.padding(horizontal = 20.dp)) {
         Spacer(modifier = Modifier.height(40.dp))
     }

@@ -23,9 +23,16 @@ class SessionManagement @Inject constructor(
     }
 
 
-    fun putValue(name: String, value: String): Boolean {
+    fun putValueInt(name: String, value: Int): Boolean {
 
+        return sharedPreferences.edit().putInt(name, value).commit()
+
+    }
+
+
+    fun putValue(name: String, value: String): Boolean {
         return sharedPreferences.edit().putString(name, value).commit()
+
     }
 
     fun getValue(name: String): String {
@@ -34,6 +41,7 @@ class SessionManagement @Inject constructor(
 
 
     fun clearToken(): Boolean {
+        sharedPreferences.edit().remove(Constants.USERID_NAME).apply()
         return sharedPreferences.edit().remove(TOKEN_NAME).commit()
     }
 

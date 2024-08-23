@@ -13,6 +13,10 @@ import com.example.subscriptionbusapplication.data.models.SubscriptionX
 import com.example.subscriptionbusapplication.data.models.User
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
+import retrofit2.Response
+import retrofit2.http.Header
+import retrofit2.http.Headers
+import retrofit2.http.POST
 
 interface UserManagement {
     fun imageResolve(requestBody: MultipartBody.Part): Flow<AppResponse<ImageResolverModel?>>
@@ -79,4 +83,10 @@ interface UserManagement {
         passport: String,
         newPassword: String
     ): Flow<AppResponse<Status?>>
+
+    fun checkTokenValidation(
+        token: String
+    ): Flow<AppResponse<Status?>>
+
+
 }

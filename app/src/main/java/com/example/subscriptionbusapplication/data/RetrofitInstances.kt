@@ -19,7 +19,7 @@ object ImageResolverRetrofitInstance {
     fun getInstance(): ImageResolveAPI {
 
         val interceptor = HttpLoggingInterceptor()
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        interceptor.setLevel(HttpLoggingInterceptor.Level.NONE)
 
         return Retrofit.Builder().baseUrl(BASE_URL).client(
             OkHttpClient().newBuilder().addInterceptor(interceptor)
@@ -37,7 +37,7 @@ object SubscriptionServiceRetrofitInstance {
     fun getInstance(): SubscriptionAPI {
 
         val interceptor = HttpLoggingInterceptor()
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        interceptor.setLevel(HttpLoggingInterceptor.Level.NONE)
 
         val gson = Gson().newBuilder()
             .registerTypeAdapter(LocalDate::class.java, LocalDateJsonAdapter()).create()

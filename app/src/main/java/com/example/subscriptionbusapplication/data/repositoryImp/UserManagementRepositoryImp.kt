@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.flow
 import okhttp3.MultipartBody
 import okio.IOException
 import retrofit2.HttpException
+import retrofit2.Response
 import javax.inject.Inject
 
 class UserManagementRepositoryImp @Inject constructor(
@@ -563,6 +564,7 @@ class UserManagementRepositoryImp @Inject constructor(
         }
     }
 
+
     override fun sendForgetPasswordRequestCode(
         email: String,
         code: String
@@ -626,5 +628,57 @@ class UserManagementRepositoryImp @Inject constructor(
             }
         }
 
+    }
+
+    override fun checkTokenValidation(token: String): Flow<AppResponse<Status?>> {
+
+
+        return flow<AppResponse<Status?>> {
+            emit(AppResponse.Loading(isLoading = true, data = null))
+            val correctToken = "Bearer $token"
+
+            try {
+                val response = subscriptionAPI.checkTokenValidation(correctToken)
+
+                when (response.code()) {
+                    200 -> {
+                        emit(AppResponse.Success(data = response.body()!!))
+                    }
+
+                    401 -> {
+                        emit(
+                            AppResponse.Error(
+                                message = "email not found, check your email",
+                                code = 400
+                            )
+                        )
+                    }
+
+                    else -> {
+
+                        emit(
+                            AppResponse.Error(
+                                message = response.message() ?: "unexpected error happened",
+                                code = response.code()
+                            )
+                        )
+                    }
+                }
+            } catch (e: IOException) {
+                emit(
+                    AppResponse.Error(
+                        message = e.localizedMessage ?: "connection error",
+                        code = -1
+                    )
+                )
+            } catch (e: HttpException) {
+                emit(
+                    AppResponse.Error(
+                        message = e.localizedMessage ?: "server refuse request",
+                        code = -2
+                    )
+                )
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.subscriptionbusapplication.AppResponse
+import com.example.subscriptionbusapplication.Constants
 import com.example.subscriptionbusapplication.SessionManagement
 import com.example.subscriptionbusapplication.data.models.SubscriptionDetails
 import com.example.subscriptionbusapplication.data.models.SubscriptionX
@@ -81,6 +82,7 @@ class DashboardViewModel @Inject constructor(
                     _clientState.value = ClientState.fromUserModel(appResponse.data!!)
                     _currentClientLoadState.value = CurrentClientLoadState()
                     _currentListOfSubscriptions.addAll(appResponse.data.subscriptions)
+                    sessionManagement.putValueInt(Constants.USERID_NAME, appResponse.data.id)
                 }
 
                 is AppResponse.Error -> {

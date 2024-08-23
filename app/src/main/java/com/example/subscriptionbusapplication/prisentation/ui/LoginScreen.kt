@@ -65,16 +65,21 @@ fun LoginScreen(
     val mapError = viewModel.errorMap
     val localFocusManager = LocalFocusManager.current
 
+
     var prevStatus by remember {
         mutableStateOf<String?>(null)
     }
 
+    navController.currentBackStackEntry?.savedStateHandle?.get<String>("status")?.let {
+        prevStatus = it
+    }
     if (loginStatus.value.isSuccess) {
 
         navController.navigate(Dashboard()) {
             popUpTo(0)
         }
         viewModel.clearState()
+
 
     }
 

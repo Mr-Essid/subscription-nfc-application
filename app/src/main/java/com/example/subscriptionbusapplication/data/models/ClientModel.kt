@@ -1,6 +1,7 @@
 package com.example.subscriptionbusapplication.data.models
 
 data class ClientModel(
+    val id: Int,
     val appId: String,
     val deviceName: String,
     val email: String,
